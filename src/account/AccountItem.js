@@ -11,8 +11,6 @@ const styles = StyleSheet.create({
   accountItem: {
     flexDirection: 'row',
     alignItems: 'stretch',
-    backgroundColor: 'rgba(36, 202, 194, 0.1)',
-    borderRadius: 5,
     padding: 8,
     height: 52,
   },
@@ -42,29 +40,75 @@ export default class AccountItem extends React.PureComponent {
   };
 
   handleSelect = () =>
-    this.props.onSelect(this.props.index);
+  this.props.onSelect(this.props.index);
 
   handleRemove = () =>
-    this.props.onRemove(this.props.index);
+  this.props.onRemove(this.props.index);
 
   render() {
-    const { email, realm } = this.props;
+    const { email, realm, index } = this.props;
 
     return (
       <Touchable style={styles.wrapper} onPress={this.handleSelect}>
-        <View style={styles.accountItem}>
+        <View style={[styles.accountItem, this.getDynamicStyles(index)]}>
           <View style={styles.details}>
-            <Text style={styles.text}>{email}</Text>
-            <Text style={styles.text}>{realm}</Text>
+            <Text style={[styles.text, this.getTextColor(index)]}>{email}</Text>
+            <Text style={[styles.text, this.getTextColor(index)]}>{realm}</Text>
           </View>
-          <Button
-            secondary
-            text="X"
-            customStyles={styles.removeButton}
-            onPress={this.handleRemove}
-          />
+          {this.getRemoveButton(index)}
         </View>
       </Touchable>
     );
   }
+  getDynamicStyles = function getDynamicStyles(index) {
+    let bColor;
+    let bRadius;
+    if (index === 0) {
+      bColor = BRAND_COLOR;
+      bRadius = 2;
+    } else {
+      bColor = 'rgba(36, 202, 194, 0.1)';
+      bRadius = 5;
+    }
+    return {
+      backgroundColor: bColor,
+      borderRadius: bRadius
+    };
+  };
+  getTextColor = function getTextColor(index) {
+    let color;
+    if (index === 0) {
+      color = 'white';
+    } else {
+      color = BRAND_COLOR;
+    }
+    return {
+      color,
+    };
+  };
+  getRemoveButton = function getRemoveButton(index) {
+    if (index === 0) {
+      return (<Button
+        primary
+        text="X"
+        customStyles={
+        styles.removeButton
+      }
+        onPress={
+        this.handleRemove
+      }
+      />);
+    } else {
+      return (<Button
+        secondary
+        text="X"
+        customStyles={
+        styles.removeButton
+      }
+        onPress={
+        this.handleRemove
+      }
+      />);
+    }
+  };
 }
