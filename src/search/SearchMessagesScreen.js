@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { ActivityIndicator, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, StyleSheet, View, Platform } from 'react-native';
 import { connect } from 'react-redux';
 import throttle from 'lodash.throttle';
 
@@ -37,6 +37,7 @@ class SearchMessagesScreen extends Component {
   state = {
     messages: [],
     isFetching: false,
+    query: '',
   };
 
   handleQueryChange = async (query) => {
@@ -44,7 +45,10 @@ class SearchMessagesScreen extends Component {
     this.query = query;
 
     throttle(async () => {
-      this.setState({ isFetching: true });
+      this.setState({
+        isFetching: true,
+        query: this.query,
+      });
       const messages = await getMessages(auth, Number.MAX_SAFE_INTEGER,
         20, 0, searchNarrow(query), false);
       this.setState({
@@ -55,12 +59,17 @@ class SearchMessagesScreen extends Component {
   }
 
   render() {
-    const { isFetching, messages } = this.state;
+    const { isFetching, messages, query } = this.state;
     const { auth, subscriptions, twentyFourHourTime } = this.props;
     const noResults = !!this.query && !isFetching && !messages.length;
 
     return (
-      <SearchScreen title="Search" keyboardAvoiding searchBarOnChange={this.handleQueryChange}>
+      <SearchScreen
+        title="Search"
+        keyboardAvoiding
+        searchBarOnChange={this.handleQueryChange}
+        showCancelIcon={Platform.OS === 'android' && query.length > 0}
+      >
         <View style={styles.results}>
           {isFetching &&
             <ActivityIndicator

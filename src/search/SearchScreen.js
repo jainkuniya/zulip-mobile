@@ -35,7 +35,7 @@ class SearchScreen extends React.Component {
 
   render() {
     const { keyboardAvoiding, title, searchBar } = this.props;
-    const { searchBarOnChange, nav, children } = this.props;
+    const { searchBarOnChange, nav, children, showCancelIcon } = this.props;
     const WrapperView = keyboardAvoiding ? KeyboardAvoidingView : View;
 
     return (
@@ -46,6 +46,7 @@ class SearchScreen extends React.Component {
           nav={nav}
           searchBar={searchBar}
           searchBarOnChange={searchBarOnChange}
+          showCancelIcon={showCancelIcon}
         />
         <WrapperView style={styles.screenWrapper} behavior="padding">
           {children}

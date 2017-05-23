@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { Input } from '../common';
+import { IconCancel } from '../common/Icons';
+import { BRAND_COLOR } from '../styles';
 
 const styles = StyleSheet.create({
   wrapper: {
@@ -13,6 +15,9 @@ const styles = StyleSheet.create({
     borderWidth: 0,
     // color: BRAND_COLOR,
   },
+  icon: {
+    margin: 6,
+  }
 });
 
 export default class SearchInput extends Component {
@@ -21,12 +26,18 @@ export default class SearchInput extends Component {
     onChange: (text: string) => void,
   };
 
+  handleClear = () => {
+    this.textInput.clear();
+    this.props.onChange('');
+  }
+
   render() {
-    const { onChange } = this.props;
+    const { onChange, showCancelIcon } = this.props;
 
     return (
       <View style={styles.wrapper}>
         <Input
+          textInputRef={component => { this.textInput = component; }}
           style={styles.input}
           autoCorrect={false}
           enablesReturnKeyAutomatically
@@ -39,6 +50,14 @@ export default class SearchInput extends Component {
           onChangeText={onChange}
           autoFocus
         />
+        { showCancelIcon &&
+          <IconCancel
+            style={styles.icon}
+            size={20}
+            color={BRAND_COLOR}
+            onPress={this.handleClear}
+          />
+        }
       </View>
     );
   }

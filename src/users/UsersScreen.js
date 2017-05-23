@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { Platform } from 'react-native';
 import { connect } from 'react-redux';
 
 import boundActions from '../boundActions';
@@ -25,7 +26,10 @@ class UsersScreen extends Component {
   render() {
     const { filter } = this.state;
     return (
-      <SearchScreen searchBarOnChange={this.handleFilterChange}>
+      <SearchScreen
+        searchBarOnChange={this.handleFilterChange}
+        showCancelIcon={Platform.OS === 'android' && filter.length > 0}
+      >
         <UserListCard {...this.props} filter={filter} />
       </SearchScreen>
     );

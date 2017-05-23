@@ -1,4 +1,5 @@
 import React from 'react';
+import { Platform } from 'react-native';
 import { connect } from 'react-redux';
 
 import { Auth } from '../types';
@@ -42,7 +43,8 @@ class SubscriptionsScreen extends React.Component {
 
   render() {
     const { streams, subscriptions } = this.props;
-    const filteredStreams = streams.filter(x => x.name.includes(this.state.filter));
+    const { filter } = this.state;
+    const filteredStreams = streams.filter(x => x.name.includes(filter));
     const subsAndStreams = filteredStreams.map(x => ({
       ...x,
       subscribed: subscriptions.some(s => s.stream_id === x.stream_id),
@@ -53,6 +55,7 @@ class SubscriptionsScreen extends React.Component {
         title="Subscriptions"
         searchBarOnChange={this.handleFilterChange}
         searchBar
+        showCancelIcon={Platform.OS === 'android' && filter.length > 0}
       >
         <StreamList
           streams={subsAndStreams}
