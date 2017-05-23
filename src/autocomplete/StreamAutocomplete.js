@@ -14,11 +14,13 @@ class StreamAutocomplete extends Component {
   render() {
     const { filter, subscriptions, onAutocomplete } = this.props;
     const streams = subscriptions
-      .filter(x => x.name.toLowerCase().startsWith(filter.toLowerCase()))
-      .slice(0, 5);
+      .filter(x => x.name.toLowerCase().startsWith(filter.toLowerCase()));
+    const itemCount = streams.length;
 
     return (
-      <Popup>
+      <Popup
+        height={(itemCount > 5) ? 175 : itemCount * 35}
+      >
         {streams.map(x => (
           <StreamItem
             key={x.stream_id}

@@ -13,12 +13,15 @@ export default class EmojiAutocomplete extends Component {
 
   render() {
     const { filter, onAutocomplete } = this.props;
-    const emojis = getFilteredEmojiList(filter).slice(0, 5);
+    const emojis = getFilteredEmojiList(filter);
+    const itemCount = emojis.length;
 
-    if (emojis.length === 0) return null;
+    if (itemCount === 0) return null;
 
     return (
-      <Popup>
+      <Popup
+        height={(itemCount > 5) ? 190 : itemCount * 38}
+      >
         {emojis.map(x => (
           <EmojiRow
             key={x}

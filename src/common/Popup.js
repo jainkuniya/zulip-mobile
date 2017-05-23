@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { ScrollView, StyleSheet } from 'react-native';
 
 import { BORDER_COLOR } from '../styles';
 
@@ -14,10 +14,15 @@ const styles = StyleSheet.create({
 
 export default class Popup extends Component {
   render() {
+    const { height } = this.props;
+
     return (
-      <View style={styles.container}>
+      <ScrollView
+        style={styles.container}
+        height={height}
+      >
         {this.props.children}
-      </View>
+      </ScrollView>
     );
   }
 }
