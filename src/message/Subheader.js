@@ -12,16 +12,22 @@ export default class Subheader extends React.PureComponent {
   };
 
   render() {
-    const { timestamp, twentyFourHourTime, from } = this.props;
+    const { timestamp, twentyFourHourTime, from, edited } = this.props;
 
     return (
       <View style={styles.subheader}>
-        <Text
-          style={[styles.username, styles.color]}
-          numberOfLines={1}
-        >
-          {from}
-        </Text>
+        <View style={styles.row}>
+          <Text
+            style={[styles.username, styles.color]}
+            numberOfLines={1}
+          >
+            {from}
+          </Text>
+          {edited &&
+          <Text style={styles.editedTag}>
+            (EDITED)
+          </Text>}
+        </View>
         <Timestamp timestamp={timestamp} twentyFourHourTime={twentyFourHourTime} />
       </View>
     );

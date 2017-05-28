@@ -11,6 +11,9 @@ export default ({ color, backgroundColor, borderColor }) => ({
   backgroundColor: {
     backgroundColor,
   },
+  row: {
+    flexDirection: 'row',
+  },
   input: {
     color,
     height: CONTROL_SIZE,
@@ -132,9 +135,14 @@ export default ({ color, backgroundColor, borderColor }) => ({
     justifyContent: 'space-between',
   },
   username: {
-    flex: 1,
     fontWeight: 'bold',
     fontSize: 16,
     lineHeight: 16,
   },
+  editedTag: {
+    color: '#999',
+    fontSize: 8,
+    padding: 4,
+    paddingLeft: 8,
+  }
 });

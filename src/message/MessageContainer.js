@@ -31,6 +31,10 @@ export default class MessageContainer extends React.PureComponent {
     return message.flags && !!~(message.flags.indexOf('starred'));
   }
 
+  isEdited(message) {
+    return message.edit_timestamp !== undefined;
+  }
+
   render() {
     const { message, auth, avatarUrl, twentyFourHourTime, isBrief, doNarrow } = this.props;
     const MessageComponent = isBrief ? MessageBrief : MessageFull;
@@ -45,6 +49,7 @@ export default class MessageContainer extends React.PureComponent {
         doNarrow={doNarrow}
         onLongPress={this.onLongPress}
         starred={this.isStarred(message)}
+        edited={this.isEdited(message)}
         realm={auth.realm}
       >
         {renderHtmlChildren({ childrenNodes, auth, onPress: this.handleLinkPress })}

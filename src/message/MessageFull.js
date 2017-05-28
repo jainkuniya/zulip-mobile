@@ -37,6 +37,7 @@ class MessageFull extends React.PureComponent {
     timestamp: number,
     reactions: [],
     twentyFourHourTime: bool,
+    edited: bool,
   };
 
   handleAvatarPress = () =>
@@ -51,7 +52,9 @@ class MessageFull extends React.PureComponent {
       selfEmail,
       starred,
       onLongPress,
-      realm } = this.props;
+      realm,
+      edited,
+     } = this.props;
 
     return (
       <View style={styles.message}>
@@ -66,6 +69,7 @@ class MessageFull extends React.PureComponent {
             from={message.sender_full_name}
             timestamp={message.timestamp}
             twentyFourHourTime={twentyFourHourTime}
+            edited={edited}
           />
           <View style={styles.messageContentWrapper}>
             <View style={styles.messageTextBodyWrapper}>

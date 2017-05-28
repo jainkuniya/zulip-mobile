@@ -1,15 +1,15 @@
 import React from 'react';
-import { StyleSheet, TouchableWithoutFeedback, View } from 'react-native';
+import { StyleSheet, TouchableWithoutFeedback, View, Text } from 'react-native';
 
 import ReactionList from '../reactions/ReactionList';
 import IconStarMessage from './IconStarMessage';
+import styles from '../styles';
 
-const styles = StyleSheet.create({
+const moreStyles = StyleSheet.create({
   message: {
     paddingTop: 0,
     paddingRight: 8,
     paddingBottom: 8,
-    paddingLeft: 48,
     overflow: 'hidden',
     flex: 1,
   },
@@ -20,6 +20,9 @@ const styles = StyleSheet.create({
   },
   messageTextBodyWrapper: {
     flex: 0.9
+  },
+  messageChildren: {
+    paddingLeft: 48,
   }
 });
 
@@ -32,15 +35,21 @@ export default class MessageBrief extends React.PureComponent {
   };
 
   render() {
-    const { message, children, selfEmail, onLongPress, starred } = this.props;
+    const { message, children, selfEmail, onLongPress, starred, edited } = this.props;
 
     return (
-      <View style={styles.message}>
-        <View style={styles.messageContentWrapper}>
-          <View style={styles.messageTextBodyWrapper}>
+      <View style={moreStyles.message}>
+        <View style={moreStyles.messageContentWrapper}>
+          <View style={moreStyles.messageTextBodyWrapper}>
             <TouchableWithoutFeedback onLongPress={onLongPress}>
-              <View>
-                {children}
+              <View style={styles.row}>
+                {edited &&
+                <Text style={styles.editedTag}>
+                  (EDITED)
+                </Text>}
+                <View style={!edited && moreStyles.messageChildren}>
+                  {children}
+                </View>
               </View>
             </TouchableWithoutFeedback>
           </View>
