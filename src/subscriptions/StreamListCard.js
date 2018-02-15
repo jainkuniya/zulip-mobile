@@ -33,6 +33,10 @@ export default class StreamListCard extends PureComponent<Props, State> {
 
   state: State;
 
+  static contextTypes = {
+    styles: () => null,
+  };
+
   state = {
     filter: '',
   };
@@ -59,6 +63,7 @@ export default class StreamListCard extends PureComponent<Props, State> {
   };
 
   render() {
+    const { backgroundColor } = this.context.styles;
     const { actions, streams, subscriptions } = this.props;
     const filteredStreams = streams.filter(x => x.name.includes(this.state.filter));
     const subsAndStreams = filteredStreams.map(x => ({
@@ -74,6 +79,7 @@ export default class StreamListCard extends PureComponent<Props, State> {
           onPress={actions.navigateToCreateStream}
         />
         <StreamList
+          backgroundColor={backgroundColor}
           streams={subsAndStreams}
           showSwitch
           showDescriptions

@@ -15,6 +15,7 @@ const styles = StyleSheet.create({
 });
 
 type Props = {
+  backgroundColor?: string,
   showDescriptions: boolean,
   showSwitch: boolean,
   selected: boolean,
@@ -37,6 +38,7 @@ export default class StreamList extends PureComponent<Props> {
 
   render() {
     const {
+      backgroundColor,
       streams,
       selected,
       showDescriptions,
@@ -70,6 +72,7 @@ export default class StreamList extends PureComponent<Props> {
         keyExtractor={item => item.stream_id}
         renderItem={({ item }) => (
           <StreamItem
+            backgroundColor={backgroundColor}
             name={item.name}
             iconSize={16}
             isPrivate={item.invite_only}
