@@ -12,7 +12,6 @@ import {
   isTopicNarrow,
 } from '../utils/narrow';
 import {
-  getActiveNarrow,
   getCurrentRealm,
   getRecipientsInGroupNarrow,
   getStreams,
@@ -71,7 +70,6 @@ class InfoNavButton extends PureComponent<Props> {
 
 export default connectWithActions(state => ({
   realm: getCurrentRealm(state),
-  narrow: getActiveNarrow(state),
   streams: getStreams(state),
   color: getTitleTextColor(state),
   recipients: getRecipientsInGroupNarrow(state),
