@@ -3,7 +3,16 @@ import React, { PureComponent } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import connectWithActions from '../connectWithActions';
-import { getUnreadCountInActiveNarrow } from '../selectors';
+import {
+  getUnreadCountInActiveNarrow,
+  getStreams,
+  getUsers,
+  getOwnEmail,
+  getUnreadTotal,
+  getUnreadStreams,
+  getUnreadHuddles,
+  getUnreadPms,
+} from '../selectors';
 import { Label, RawLabel } from '../common';
 import { unreadToLimitedCount } from '../utils/unread';
 import MarkUnreadButton from './MarkUnreadButton';
@@ -59,6 +68,15 @@ class UnreadNotice extends PureComponent<Props> {
   }
 }
 
-export default connectWithActions(state => ({
-  unreadCount: getUnreadCountInActiveNarrow(state),
+export default connectWithActions((state, props) => ({
+  unreadCount: getUnreadCountInActiveNarrow(
+    props.narrow,
+    getStreams(state),
+    getUsers(state),
+    getOwnEmail(state),
+    getUnreadTotal(state),
+    getUnreadStreams(state),
+    getUnreadHuddles(state),
+    getUnreadPms(state),
+  ),
 }))(UnreadNotice);

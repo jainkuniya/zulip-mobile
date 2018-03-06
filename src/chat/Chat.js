@@ -31,14 +31,16 @@ export default class Chat extends PureComponent<{}> {
 
   render() {
     const { styles } = this.context;
+    const { narrow } = this.props;
 
     return (
       <KeyboardAvoider style={styles.flexed} behavior="padding">
         <View style={styles.flexed}>
           <OfflineNotice />
-          <UnreadNotice />
+          <UnreadNotice narrow={narrow} />
           <NoMessages />
           <MessageListContainer
+            narrow={narrow}
             onReplySelect={this.handleReplySelect}
             listRef={component => {
               this.listComponent = component || this.listComponent;

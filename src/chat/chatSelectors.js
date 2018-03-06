@@ -21,7 +21,7 @@ import {
 } from '../utils/narrow';
 import { groupItemsById } from '../utils/misc';
 import { shouldBeMuted } from '../utils/message';
-import { NULL_ARRAY, NULL_MESSAGE, NULL_USER, NULL_SUBSCRIPTION } from '../nullObjects';
+import { NULL_ARRAY, NULL_MESSAGE, NULL_SUBSCRIPTION } from '../nullObjects';
 
 const getMessagesFromChatState = state =>
   state.messages[getActiveNarrowString(state)] || NULL_ARRAY;
@@ -94,32 +94,17 @@ export const getLastTopicInActiveNarrow = createSelector(
   },
 );
 
-export const getUserInPmNarrow = createSelector(
-  getActiveNarrow,
-  getUsers,
-  (narrow, users) => users.find(x => x.email === narrow[0].operand) || NULL_USER,
-);
+export const getRecipientsInGroupNarrow = (narrow, users) =>
+  !narrow || narrow.length === 0
+    ? []
+    : narrow[0].operand.split(',').map(r => users.find(x => x.email === r) || []);
 
-export const getRecipientsInGroupNarrow = createSelector(
-  getActiveNarrow,
-  getUsers,
-  (narrow, users) =>
-    !narrow || narrow.length === 0
-      ? []
-      : narrow[0].operand.split(',').map(r => users.find(x => x.email === r) || []),
-);
-
-export const getStreamInNarrow = createSelector(
-  getActiveNarrow,
-  getSubscriptions,
-  getStreams,
-  (narrow, subscriptions, streams) =>
-    subscriptions.find(x => x.name === narrow[0].operand) || {
-      ...streams.find(x => x.name === narrow[0].operand),
-      in_home_view: true,
-    } ||
-    NULL_SUBSCRIPTION,
-);
+export const getStreamInNarrow = (narrow, subscriptions, streams) =>
+  subscriptions.find(x => x.name === narrow[0].operand) || {
+    ...streams.find(x => x.name === narrow[0].operand),
+    in_home_view: true,
+  } ||
+  NULL_SUBSCRIPTION;
 
 export const getIfNoMessages = createSelector(
   getShownMessagesInActiveNarrow,

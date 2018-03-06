@@ -35,6 +35,7 @@ export default class MessageListWeb extends Component<Props> {
   };
 
   componentWillReceiveProps = (nextProps: Props) => {
+    console.log('i am here');
     webViewHandleUpdates(this.props, nextProps, this.sendMessage);
   };
 
@@ -50,7 +51,6 @@ export default class MessageListWeb extends Component<Props> {
     });
 
     // console.log(html);
-
     return (
       <WebView
         source={{ html }}

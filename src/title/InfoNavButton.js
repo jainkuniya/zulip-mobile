@@ -12,11 +12,11 @@ import {
   isTopicNarrow,
 } from '../utils/narrow';
 import {
-  getActiveNarrow,
   getCurrentRealm,
   getRecipientsInGroupNarrow,
   getStreams,
   getTitleTextColor,
+  getUsers,
 } from '../selectors';
 import NavButton from '../nav/NavButton';
 import NavButtonPlaceholder from '../nav/NavButtonPlaceholder';
@@ -61,7 +61,7 @@ class InfoNavButton extends PureComponent<Props> {
       { isFunc: isPrivateNarrow, handlerFunc: this.handlePrivateInfo },
       { isFunc: isGroupNarrow, handlerFunc: this.handleGroupInfo },
     ];
-    const pressHandler = handlers.find(x => x.isFunc(narrow));
+    const pressHandler = narrow && handlers.find(x => x.isFunc(narrow));
 
     if (!pressHandler || !pressHandler.handlerFunc) return <NavButtonPlaceholder />;
 
@@ -69,10 +69,9 @@ class InfoNavButton extends PureComponent<Props> {
   }
 }
 
-export default connectWithActions(state => ({
+export default connectWithActions((state, props) => ({
   realm: getCurrentRealm(state),
-  narrow: getActiveNarrow(state),
   streams: getStreams(state),
   color: getTitleTextColor(state),
-  recipients: getRecipientsInGroupNarrow(state),
+  recipients: getRecipientsInGroupNarrow(props.narrow, getUsers(state)),
 }))(InfoNavButton);

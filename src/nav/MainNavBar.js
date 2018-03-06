@@ -33,15 +33,15 @@ class MainNavBar extends PureComponent<Props> {
 
   render() {
     const { styles } = this.context;
-    const { actions, backgroundColor, canGoBack, textColor } = this.props;
+    const { actions, backgroundColor, canGoBack, narrow, textColor } = this.props;
 
     return (
       <View style={[styles.navBar, { backgroundColor }]}>
         {canGoBack && (
           <NavButton name="arrow-left" color={textColor} onPress={actions.navigateBack} />
         )}
-        <Title color={textColor} />
-        <InfoNavButton />
+        <Title color={textColor} narrow={narrow} />
+        <InfoNavButton narrow={narrow} />
       </View>
     );
   }
