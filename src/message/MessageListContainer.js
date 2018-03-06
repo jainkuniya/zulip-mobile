@@ -135,7 +135,7 @@ export default connectWithActions((state, props) => ({
   messages: props.messages || getShownMessagesInActiveNarrow(state),
   narrow: props.narrow || getActiveNarrow(state),
   realmEmoji: getAllRealmEmoji(state),
-  renderedMessages: props.renderedMessages || getRenderedMessages(state),
+  renderedMessages: props.renderedMessages || getRenderedMessages(props.narrow)(state),
   showMessagePlaceholders: props.showMessagePlaceholders || getShowMessagePlaceholders(state),
   subscriptions: getSubscriptions(state),
   typingUsers: props.typingUsers || getCurrentTypingUsers(state),

@@ -2,17 +2,13 @@
 import { createSelector } from 'reselect';
 
 import { getMute, getSubscriptions } from '../directSelectors';
-import { getActiveNarrow } from '../baseSelectors';
 import { getShownMessagesInActiveNarrow } from '../chat/chatSelectors';
 import renderMessages from './renderMessages';
 import { findAnchor } from '../utils/message';
 import { NULL_MESSAGE } from '../nullObjects';
 
-export const getRenderedMessages = createSelector(
-  getShownMessagesInActiveNarrow,
-  getActiveNarrow,
-  (messages, narrow) => renderMessages(messages, narrow),
-);
+export const getRenderedMessages = narrow =>
+  createSelector(getShownMessagesInActiveNarrow, messages => renderMessages(messages, narrow));
 
 export const getAnchorForActiveNarrow = createSelector(
   getShownMessagesInActiveNarrow,
