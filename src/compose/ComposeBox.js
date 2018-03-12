@@ -19,21 +19,15 @@ import { showErrorAlert } from '../utils/info';
 import { IconDone, IconSend } from '../common/Icons';
 import { isStreamNarrow, topicNarrow } from '../utils/narrow';
 import ComposeMenuContainer from './ComposeMenuContainer';
-import AutoCompleteView from '../autocomplete/AutoCompleteView';
-import TopicAutocomplete from '../autocomplete/TopicAutocomplete';
 import getComposeInputPlaceholder from './getComposeInputPlaceholder';
 import { replaceEmoticonsWithEmoji } from '../emoji/emoticons';
 import NotSubscribed from '../message/NotSubscribed';
+import AutoCompleteViewWrapper from '../autocomplete/AutoCompleteViewWrapper';
 
 const MIN_HEIGHT = 42;
 const MAX_HEIGHT = 100;
 
 const componentStyles = StyleSheet.create({
-  autocompleteWrapper: {
-    position: 'absolute',
-    bottom: 0,
-    width: '100%',
-  },
   bottom: {
     flexDirection: 'column',
     justifyContent: 'flex-end',
@@ -283,24 +277,16 @@ export default class ComposeBox extends PureComponent<Props, State> {
 
     return (
       <View>
-        <View
-          style={[
-            componentStyles.autocompleteWrapper,
-            { marginBottom: totalHeight + safeAreaInsets.bottom },
-          ]}
-        >
-          <TopicAutocomplete
-            isFocused={isTopicFocused}
-            narrow={narrow}
-            text={topic}
-            onAutocomplete={this.handleTopicChange}
-          />
-          <AutoCompleteView
-            text={message}
-            onAutocomplete={this.handleMessageChange}
-            selection={selection}
-          />
-        </View>
+        <AutoCompleteViewWrapper
+          narrow={narrow}
+          marginBottom={totalHeight + safeAreaInsets.bottom}
+          isTopicFocused={isTopicFocused}
+          topicText={topic}
+          onTopicAutocomplete={this.handleTopicChange}
+          composeText={message}
+          onMessageAutocomplete={this.handleMessageChange}
+          messageSelection={selection}
+        />
         <View
           style={[styles.composeBox, { height: totalHeight, marginBottom: safeAreaInsets.bottom }]}
         >
