@@ -1,6 +1,6 @@
 /* @flow */
 import React, { PureComponent } from 'react';
-import { Platform, StyleSheet, View, TextInput, findNodeHandle } from 'react-native';
+import { StyleSheet, View, TextInput, findNodeHandle } from 'react-native';
 import TextInputReset from 'react-native-text-input-reset';
 import isEqual from 'lodash.isequal';
 
@@ -25,9 +25,14 @@ import NotSubscribed from '../message/NotSubscribed';
 import AutoCompleteViewWrapper from '../autocomplete/AutoCompleteViewWrapper';
 
 const MIN_HEIGHT = 42;
-const MAX_HEIGHT = 100;
+const MAX_HEIGHT = 76;
 
 const componentStyles = StyleSheet.create({
+  autocompleteWrapper: {
+    position: 'absolute',
+    bottom: 0,
+    width: '100%',
+  },
   bottom: {
     flexDirection: 'column',
     justifyContent: 'flex-end',
@@ -37,11 +42,10 @@ const componentStyles = StyleSheet.create({
     justifyContent: 'center',
   },
   topic: {
-    height: 30,
     backgroundColor: 'rgba(127, 127, 127, 0.25)',
   },
   button: {
-    margin: 5,
+    margin: 4,
   },
 });
 
@@ -88,7 +92,7 @@ export default class ComposeBox extends PureComponent<Props, State> {
     isMessageFocused: false,
     isTopicFocused: false,
     isMenuExpanded: false,
-    height: 23,
+    height: MIN_HEIGHT,
     topic: '',
     message: this.props.draft,
     selection: { start: 0, end: 0 },
@@ -115,8 +119,8 @@ export default class ComposeBox extends PureComponent<Props, State> {
     this.setState({ selection });
   };
 
-  handleHeightChange = (height: number) => {
-    this.setState({ height });
+  handleOnLayout = (event: Object) => {
+    this.setState({ height: event.nativeEvent.layout.height });
   };
 
   handleMessageFocus = () => {
@@ -261,25 +265,18 @@ export default class ComposeBox extends PureComponent<Props, State> {
     }
 
     const canSelectTopic = (isMessageFocused || isTopicFocused) && isStreamNarrow(narrow);
-    const messageHeight = Math.min(Math.max(MIN_HEIGHT, height + 12), MAX_HEIGHT);
-    const totalHeight = canSelectTopic ? messageHeight + 30 : messageHeight;
     const placeholder = getComposeInputPlaceholder(narrow, auth.email, users);
-    const msgInputStyles = {
-      height: messageHeight === MIN_HEIGHT ? MIN_HEIGHT - 12 : messageHeight,
-      ...Platform.select({
-        android: {
-          paddingTop: messageHeight === MAX_HEIGHT ? 6 : 0,
-          paddingBottom: messageHeight === MAX_HEIGHT ? 6 : 0,
-        },
-        ios: { paddingTop: 6, paddingBottom: 6 },
-      }),
-    };
 
     return (
-      <View>
+      <View
+        style={{
+          marginBottom: safeAreaInsets.bottom,
+        }}
+      >
         <AutoCompleteViewWrapper
+          style={componentStyles.autocompleteWrapper}
+          marginBottom={height}
           narrow={narrow}
-          marginBottom={totalHeight + safeAreaInsets.bottom}
           isTopicFocused={isTopicFocused}
           topicText={topic}
           onTopicAutocomplete={this.handleTopicChange}
@@ -287,9 +284,7 @@ export default class ComposeBox extends PureComponent<Props, State> {
           onMessageAutocomplete={this.handleMessageChange}
           messageSelection={selection}
         />
-        <View
-          style={[styles.composeBox, { height: totalHeight, marginBottom: safeAreaInsets.bottom }]}
-        >
+        <View style={[styles.composeBox]} onLayout={this.handleOnLayout}>
           <View style={componentStyles.bottom}>
             <ComposeMenuContainer
               narrow={narrow}
@@ -314,16 +309,16 @@ export default class ComposeBox extends PureComponent<Props, State> {
               />
             )}
             <MultilineInput
-              style={[styles.composeTextInput, msgInputStyles]}
+              style={[styles.composeTextInput]}
               placeholder={placeholder}
               textInputRef={component => {
                 this.messageInput = component;
                 if (component) messageInputRef(component);
               }}
+              maxHeight={MAX_HEIGHT}
               onChange={this.handleMessageChange}
               onFocus={this.handleMessageFocus}
               onBlur={this.handleMessageBlur}
-              onHeightChange={this.handleHeightChange}
               onSelectionChange={this.handleMessageSelectionChange}
               value={message}
             />

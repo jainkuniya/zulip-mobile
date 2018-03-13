@@ -25,7 +25,6 @@ export default ({ color, backgroundColor, borderColor, cardColor }: Props) => ({
   },
   input: {
     color,
-    height: CONTROL_SIZE,
     ...Platform.select({
       ios: {
         borderWidth: 1,
@@ -51,6 +50,8 @@ export default ({ color, backgroundColor, borderColor, cardColor }: Props) => ({
     borderColor: 'transparent',
     padding: 0,
     fontSize: 15,
+    marginTop: 4,
+    marginBottom: 6,
   },
   background: {
     backgroundColor,
