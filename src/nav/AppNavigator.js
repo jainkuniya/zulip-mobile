@@ -1,4 +1,5 @@
 /* @TODO flow */
+import React from 'react';
 import { StackNavigator } from 'react-navigation';
 
 import AccountPickScreen from '../account/AccountPickScreen';
@@ -39,7 +40,7 @@ export default StackNavigator(
     chat: { screen: ChatScreen },
     dev: { screen: DevAuthScreen },
     loading: { screen: LoadingScreen },
-    main: { screen: MainScreenWithTabs },
+    main: { screen: props => <MainScreenWithTabs {...props} /> },
     password: { screen: PasswordAuthScreen },
     realm: { screen: RealmScreen },
     search: { screen: SearchMessagesScreen },

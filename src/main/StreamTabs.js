@@ -1,5 +1,5 @@
 /* @flow */
-import React from 'react';
+import React, { PureComponent } from 'react';
 import { StyleSheet, Text } from 'react-native';
 import { TabNavigator, TabBarTop } from 'react-navigation';
 import { FormattedMessage } from 'react-intl';
@@ -16,34 +16,40 @@ const styles = StyleSheet.create({
   },
 });
 
-export default TabNavigator(
-  {
-    subscribed: {
-      screen: SubscriptionsContainer,
-      navigationOptions: {
-        tabBarLabel: (props: TabNavigationOptionsPropsType) => (
-          <Text style={[styles.tab, { color: props.tintColor }]}>
-            <FormattedMessage id="Subscribed" defaultMessage="Subscribed" />
-          </Text>
-        ),
+export default class StreamTabs extends PureComponent<> {
+  render() {
+    console.log('Streams tabs props: ', this.props);
+    const Tabs = TabNavigator(
+      {
+        subscribed: {
+          screen: SubscriptionsContainer,
+          navigationOptions: {
+            tabBarLabel: (props: TabNavigationOptionsPropsType) => (
+              <Text style={[styles.tab, { color: props.tintColor }]}>
+                <FormattedMessage id="Subscribed" defaultMessage="Subscribed" />
+              </Text>
+            ),
+          },
+        },
+        allStreams: {
+          screen: StreamListContainer,
+          navigationOptions: {
+            tabBarLabel: (props: TabNavigationOptionsPropsType) => (
+              <Text style={[styles.tab, { color: props.tintColor }]}>
+                <FormattedMessage id="All streams" defaultMessage="All streams" />
+              </Text>
+            ),
+          },
+        },
       },
-    },
-    allStreams: {
-      screen: StreamListContainer,
-      navigationOptions: {
-        tabBarLabel: (props: TabNavigationOptionsPropsType) => (
-          <Text style={[styles.tab, { color: props.tintColor }]}>
-            <FormattedMessage id="All streams" defaultMessage="All streams" />
-          </Text>
-        ),
-      },
-    },
-  },
-  tabsOptions({
-    tabBarComponent: TabBarTop,
-    tabBarPosition: 'top',
-    showLabel: true,
-    showIcon: false,
-    tabWidth: 100,
-  }),
-);
+      tabsOptions({
+        tabBarComponent: TabBarTop,
+        tabBarPosition: 'top',
+        showLabel: true,
+        showIcon: false,
+        tabWidth: 100,
+      }),
+    );
+    return <Tabs />;
+  }
+}

@@ -12,11 +12,13 @@ export default class MainScreenWithTabs extends PureComponent<{}> {
 
   render() {
     const { styles } = this.context;
+    const { navigation } = this.props;
+    console.log('Stack Navigation State', navigation.state);
 
     return (
       <View style={[styles.flexed, styles.backgroundColor]}>
         <ZulipStatusBar />
-        <MainTabs />
+        <MainTabs stackNavigationState={navigation.state} />
       </View>
     );
   }
