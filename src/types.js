@@ -459,6 +459,7 @@ export type NamedUser = {
   full_name: string,
 };
 
+export type UserType = any;
 export type RealmEmoji = any;
 export type ResponseExtractionFunc = any;
 export type AuthGetStringAndMessageType = any;
