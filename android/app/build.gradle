@@ -179,7 +179,7 @@ dependencies {
     compile fileTree(dir: "libs", include: ["*.jar"])
     compile "com.android.support:appcompat-v7:23.0.1"
     compile "me.leolin:ShortcutBadger:1.1.16@aar"
-    compile "com.facebook.react:react-native:+"  // From node_modules
+    compile project(':ReactAndroid') // build react-native from `zulip/react-native` git
     compile 'com.facebook.fresco:animated-gif:1.3.0' // For animated GIF support
     compile 'com.android.support:customtabs:23.0.1'
 
@@ -190,4 +190,10 @@ dependencies {
 task copyDownloadableDepsToLibs(type: Copy) {
   from configurations.compile
   into 'libs'
+}
+
+// override 3rd-party React Native modules dependencies so that
+// they don't bundle the pre-compiled library
+configurations.all {
+    exclude group: 'com.facebook.react', module: 'react-native'
 }
