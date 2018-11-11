@@ -567,7 +567,7 @@ var handleLongPress = function handleLongPress(target) {
   hasLongPressed = true;
   sendMessage({
     type: 'longPress',
-    target: target.matches('.header') ? 'header' : target.matches('a') ? 'link' : 'message',
+    target: target.closest('.header') ? 'header' : target.closest('a') ? 'link' : 'message',
     messageId: getMessageIdFromNode(target),
     href: target.matches('a') ? requireAttribute(target, 'href') : null
   });
