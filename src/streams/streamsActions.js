@@ -55,6 +55,14 @@ export const updateExistingStream = (
       newValues.isAnnouncementOnly,
     );
   }
+  if (initialValues.is_announcement_only !== newValues.isAnnouncementOnly) {
+    await api.updateStream(
+      getAuth(getState()),
+      id,
+      'is_announcement_only',
+      newValues.isAnnouncementOnly,
+    );
+  }
 };
 
 export const togglePinStream = (streamId: number, value: boolean) => async (
