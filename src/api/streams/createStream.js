@@ -9,11 +9,13 @@ export default (
   description?: string = '',
   principals?: string[] = [],
   inviteOnly?: boolean = false,
+  isAnnounceOnly?: boolean = false,
   announce?: boolean = false,
 ): Promise<ApiResponse> =>
   apiPost(auth, 'users/me/subscriptions', {
     subscriptions: JSON.stringify([{ name, description }]),
     principals: JSON.stringify(principals),
     invite_only: inviteOnly,
+    is_announcement_only: isAnnounceOnly,
     announce,
   });
