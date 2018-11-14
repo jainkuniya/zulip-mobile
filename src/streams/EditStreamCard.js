@@ -19,13 +19,20 @@ type Props = $ReadOnly<{|
     name: string,
     description: string,
     invite_only: boolean,
+    is_announcement_only: boolean,
   },
-  onComplete: (name: string, description: string, isPrivate: boolean) => void,
+  onComplete: (
+    name: string,
+    description: string,
+    isPrivate: boolean,
+    isAnnouncementOnly: boolean,
+  ) => void,
 |}>;
 
 type State = {|
   name: string,
   description: string,
+  isAnnouncementOnly: boolean,
   isPrivate: boolean,
 |};
 
@@ -33,13 +40,14 @@ export default class EditStreamCard extends PureComponent<Props, State> {
   state = {
     name: this.props.initialValues.name,
     description: this.props.initialValues.description,
+    isAnnouncementOnly: this.props.initialValues.is_announcement_only,
     isPrivate: this.props.initialValues.invite_only,
   };
 
   handlePerformAction = () => {
     const { onComplete } = this.props;
-    const { name, description, isPrivate } = this.state;
-    onComplete(name, description, isPrivate);
+    const { name, description, isPrivate, isAnnouncementOnly } = this.state;
+    onComplete(name, description, isPrivate, isAnnouncementOnly);
   };
 
   handleNameChange = (name: string) => {
@@ -52,6 +60,10 @@ export default class EditStreamCard extends PureComponent<Props, State> {
 
   handleIsPrivateChange = (isPrivate: boolean) => {
     this.setState({ isPrivate });
+  };
+
+  handleIsAnnouncementChange = (isAnnouncementOnly: boolean) => {
+    this.setState({ isAnnouncementOnly });
   };
 
   render() {
@@ -81,6 +93,12 @@ export default class EditStreamCard extends PureComponent<Props, State> {
           label="Private"
           value={this.state.isPrivate}
           onValueChange={this.handleIsPrivateChange}
+        />
+        <OptionRow
+          style={componentStyles.optionRow}
+          label="Restrict posting to organization administrators"
+          value={this.state.isAnnouncementOnly}
+          onValueChange={this.handleIsAnnouncementChange}
         />
         <ZulipButton
           style={styles.marginTop}
