@@ -6,7 +6,7 @@ import { StyleSheet, View } from 'react-native';
 import type { GlobalState, RealmEmojiType } from '../types';
 import { RawLabel, Touchable } from '../common';
 import Emoji from './Emoji';
-import RealmEmoji from './RealmEmoji';
+import ImageEmoji from './ImageEmoji';
 import { getActiveRealmEmojiByName } from './emojiSelectors';
 
 const styles = StyleSheet.create({
@@ -40,7 +40,7 @@ class EmojiRow extends PureComponent<Props> {
     return (
       <Touchable onPress={this.handlePress}>
         <View style={styles.emojiRow}>
-          {realmEmoji ? <RealmEmoji emoji={realmEmoji} /> : <Emoji name={name} size={20} />}
+          {realmEmoji ? <ImageEmoji emoji={realmEmoji} /> : <Emoji name={name} size={20} />}
           <RawLabel style={styles.text} text={name} />
         </View>
       </Touchable>

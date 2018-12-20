@@ -3,7 +3,7 @@
 import React, { PureComponent } from 'react';
 import { StyleSheet, Image } from 'react-native';
 
-import type { RealmEmojiType } from '../types';
+import type { RealmEmojiType, ZulipExtraEmojiType } from '../types';
 
 const styles = StyleSheet.create({
   image: {
@@ -13,7 +13,7 @@ const styles = StyleSheet.create({
 });
 
 type Props = {|
-  emoji: RealmEmojiType,
+  emoji: RealmEmojiType | ZulipExtraEmojiType,
 |};
 
 export default class RealmEmoji extends PureComponent<Props> {
