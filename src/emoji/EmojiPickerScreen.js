@@ -13,6 +13,7 @@ import { getFilteredEmojiNames } from './data';
 import type { GlobalState, RealmEmojiState, Auth, Dispatch } from '../types';
 import { getAuth, getActiveRealmEmojiByName } from '../selectors';
 import { navigateBack } from '../nav/navActions';
+import zulipExtraEmojis from './zulipExtraEmojiMap';
 
 type Props = {|
   activeRealmEmojiByName: RealmEmojiState,
@@ -57,7 +58,7 @@ class EmojiPickerScreen extends PureComponent<Props, State> {
     const { activeRealmEmojiByName } = this.props;
     const { filter } = this.state;
 
-    const emojiNames = getFilteredEmojiNames(filter, activeRealmEmojiByName);
+    const emojiNames = getFilteredEmojiNames(filter, activeRealmEmojiByName, zulipExtraEmojis);
 
     return (
       <Screen search scrollEnabled={false} searchBarOnChange={this.handleInputChange}>

@@ -9,6 +9,7 @@ import EmojiRow from '../emoji/EmojiRow';
 import { getFilteredEmojiNames } from '../emoji/data';
 import type { GlobalState, RealmEmojiState } from '../types';
 import { getActiveRealmEmojiByName } from '../selectors';
+import zulipExtraEmojis from '../emoji/zulipExtraEmojiMap';
 
 type Props = {|
   filter: string,
@@ -25,7 +26,7 @@ class EmojiAutocomplete extends PureComponent<Props> {
 
   render() {
     const { filter, activeRealmEmojiByName } = this.props;
-    const emojiNames = getFilteredEmojiNames(filter, activeRealmEmojiByName);
+    const emojiNames = getFilteredEmojiNames(filter, activeRealmEmojiByName, zulipExtraEmojis);
 
     if (emojiNames.length === 0) {
       return null;

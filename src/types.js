@@ -736,6 +736,14 @@ export type InitialDataRealmFilters = {|
   realm_filters: RealmFilter[],
 |};
 
+export type ZulipExtraEmojiType = {|
+  source_url: string,
+|};
+
+export type ZulipExtraEmojiMap = $ReadOnly<{
+  [id: string]: ZulipExtraEmojiType,
+}>;
+
 export type InitialDataRealmUser = {|
   avatar_source: 'G',
   avatar_url: string,
