@@ -127,6 +127,7 @@ export default (state: GlobalState, event: $FlowFixMe): EventAction => {
     case 'reaction':
       return {
         ...event,
+        user_id: event.user.user_id,
         type: opToActionReaction[event.op],
       };
 

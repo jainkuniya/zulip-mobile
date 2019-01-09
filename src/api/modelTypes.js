@@ -276,14 +276,13 @@ export type Narrow = $ReadOnlyArray<NarrowElement>;
  */
 export type ReactionType = 'unicode_emoji' | 'realm_emoji' | 'zulip_extra_emoji';
 
-/** An emoji reaction to a message. */
-export type Reaction = $ReadOnly<{|
-  user: $ReadOnly<{|
-    email: string,
-    full_name: string,
-    user_id?: number, //  present in reaction add event
-    id?: number, // present when messages are fetched via `getMessages` API
-  |}>,
+/**
+ *  An emoji reaction to a message.
+ *  There is a mismatch in key when we get reactions from getMessages API and reaction add event
+ *  So pull out common stuff here
+ *  https://chat.zulip.org/#narrow/stream/3-backend/topic/key.20mismatch.20in.20msg.20reaction
+ */
+export type ReactionCommon = $ReadOnly<{|
   emoji_name: string,
   reaction_type: ReactionType,
 
@@ -295,6 +294,16 @@ export type Reaction = $ReadOnly<{|
    *   https://github.com/zulip/zulip/blob/master/zerver/models.py
    */
   emoji_code: string,
+|}>;
+
+/**
+ * An emoji reaction to a message.
+ * This has different structure compared to what we gets from server (See `ApiMessageReaction` and `ApiReaction`)
+ * We are persisting it in this structure, because we don't care about other details of the user
+ */
+export type Reaction = $ReadOnly<{|
+  ...$Exact<ReactionCommon>,
+  user_id: number,
 |}>;
 
 /**
