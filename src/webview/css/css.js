@@ -258,7 +258,7 @@ hr {
 .twitter-image img {
   width: 100%;
   height: 200px;
-  object-fit: contain;
+  object-fit: cover;
 }
 blockquote {
   padding-left: 0.5em;
