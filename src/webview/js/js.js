@@ -139,7 +139,7 @@ let viewportHeight = documentBody.clientHeight;
 window.addEventListener('resize', event => {
   const difference = viewportHeight - documentBody.clientHeight;
   if (documentBody.scrollHeight !== documentBody.scrollTop + documentBody.clientHeight) {
-    window.scrollBy({ left: 0, top: difference });
+    window.scrollBy({ left: 0, top: difference, behavior: 'smooth' });
   }
   viewportHeight = documentBody.clientHeight;
 });

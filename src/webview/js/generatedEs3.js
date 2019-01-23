@@ -88,7 +88,8 @@ window.addEventListener('resize', function (event) {
   if (documentBody.scrollHeight !== documentBody.scrollTop + documentBody.clientHeight) {
     window.scrollBy({
       left: 0,
-      top: difference
+      top: difference,
+      behavior: 'smooth'
     });
   }
 
