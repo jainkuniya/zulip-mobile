@@ -135,11 +135,32 @@ const showHideElement = (elementId: string, show: boolean) => {
 
 /* Cached to avoid re-looking it up all the time. */
 let viewportHeight = documentBody.clientHeight;
+let belowContentHeight =
+  documentBody.scrollHeight - documentBody.scrollTop - documentBody.clientHeight;
+let nearBottom =
+  documentBody.scrollHeight - 300 < documentBody.scrollTop + documentBody.clientHeight;
 
 window.addEventListener('resize', event => {
+  if (viewportHeight === 0) {
+    // webview resizing at the time of creation
+    viewportHeight = documentBody.clientHeight;
+    return;
+  }
   const difference = viewportHeight - documentBody.clientHeight;
-  if (documentBody.scrollHeight !== documentBody.scrollTop + documentBody.clientHeight) {
+
+  if (
+    difference > 0
+    || !nearBottom // keybaord pops || !nearBottom
+    // && documentBody.scrollHeight !== documentBody.scrollTop + documentBody.clientHeight
+  ) {
     window.scrollBy({ left: 0, top: difference, behavior: 'smooth' });
+  } else if (belowContentHeight > 0) {
+    const realdiff = -1 * Math.min(-1 * difference, belowContentHeight);
+    window.scrollBy({
+      left: 0,
+      top: realdiff,
+      behavior: 'smooth',
+    });
   }
   viewportHeight = documentBody.clientHeight;
 });
@@ -355,6 +376,11 @@ let lastTouchPositionY = -1;
 
 const handleScrollEvent = () => {
   lastTouchEventTimestamp = 0;
+  nearBottom = documentBody.scrollHeight - 300 < documentBody.scrollTop + documentBody.clientHeight;
+  setTimeout(() => {
+    belowContentHeight =
+      documentBody.scrollHeight - documentBody.scrollTop - documentBody.clientHeight;
+  }, 0);
   if (scrollEventsDisabled) {
     return;
   }

@@ -82,13 +82,27 @@ var showHideElement = function showHideElement(elementId, show) {
 };
 
 var viewportHeight = documentBody.clientHeight;
+var belowContentHeight = documentBody.scrollHeight - documentBody.scrollTop - documentBody.clientHeight;
+var nearBottom = documentBody.scrollHeight - 300 < documentBody.scrollTop + documentBody.clientHeight;
 window.addEventListener('resize', function (event) {
+  if (viewportHeight === 0) {
+    viewportHeight = documentBody.clientHeight;
+    return;
+  }
+
   var difference = viewportHeight - documentBody.clientHeight;
 
-  if (documentBody.scrollHeight !== documentBody.scrollTop + documentBody.clientHeight) {
+  if (difference > 0 || !nearBottom) {
+      window.scrollBy({
+        left: 0,
+        top: difference,
+        behavior: 'smooth'
+      });
+    } else if (belowContentHeight > 0) {
+    var realdiff = -1 * Math.min(-1 * difference, belowContentHeight);
     window.scrollBy({
       left: 0,
-      top: difference,
+      top: realdiff,
       behavior: 'smooth'
     });
   }
@@ -234,6 +248,10 @@ var lastTouchPositionY = -1;
 
 var handleScrollEvent = function handleScrollEvent() {
   lastTouchEventTimestamp = 0;
+  nearBottom = documentBody.scrollHeight - 300 < documentBody.scrollTop + documentBody.clientHeight;
+  setTimeout(function () {
+    belowContentHeight = documentBody.scrollHeight - documentBody.scrollTop - documentBody.clientHeight;
+  }, 0);
 
   if (scrollEventsDisabled) {
     return;
