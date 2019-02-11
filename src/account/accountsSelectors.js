@@ -63,10 +63,10 @@ export const getActiveAccount = (state: GlobalState): Account => {
 };
 
 /** The user's own email in the active account; throws if none. */
-export const getOwnEmail = (state: GlobalState): string => {
-  const activeAccount = getActiveAccount(state);
-  return activeAccount.email;
-};
+export const getOwnEmail: Selector<string> = createSelector(getActiveAccount, account => {
+  const { email } = account;
+  return email;
+});
 
 /** The realm of the active account; throws if none. */
 export const getCurrentRealm: Selector<string> = createSelector(getActiveAccount, account => {
