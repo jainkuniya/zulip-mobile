@@ -5,7 +5,7 @@ import type { InputSelectionType } from '../types';
  * @param {string} textWhole - Whole text present in the compose box input.
  * @param {Object} selection - Current {start, end} position of the cursor in the compose box input
  *
- * @returns {Object} - This object consists of `lastWordPrefix` (which can be one of `:`, `#`, `@`)
+ * @returns {Object} - This object consists of `autocompleteType` (which can be one of `:`, `#`, `@`)
  * and `filter` text according to which respective autocomplete list needs to be filtered.
  */
 export default (textWhole: string, selection: InputSelectionType) => {
@@ -24,11 +24,11 @@ export default (textWhole: string, selection: InputSelectionType) => {
       : -1,
   );
 
-  const lastWordPrefix: string = lastIndex !== -1 ? text[lastIndex] : '';
+  const autocompleteType: string = lastIndex !== -1 ? text[lastIndex] : '';
   const filter: string =
     text.length > lastIndex + 1 && !['\n', ' '].includes(text[lastIndex + 1])
       ? text.substring(lastIndex + 1, text.length)
       : '';
 
-  return { lastWordPrefix, filter };
+  return { autocompleteType, filter };
 };
