@@ -1,6 +1,17 @@
 /* @flow strict-local */
 import type { InputSelectionType } from '../types';
 
+const getTokenIndex = (text: string): number => {
+  const lastIndexOfEmojiToken = text.lastIndexOf(':');
+  const lastIndexOfStreamToken = text.lastIndexOf('#');
+  const lastIndexOfPeopleToken =
+    ['\n', ' ', '#', ':'].includes(text[text.lastIndexOf('@') - 1]) || text.lastIndexOf('@') === 0 // to make sure `@` is not the part of email
+      ? text.lastIndexOf('@')
+      : -1;
+
+  return Math.max(lastIndexOfEmojiToken, lastIndexOfStreamToken, lastIndexOfPeopleToken);
+};
+
 /**
  * @param {string} textWhole - Whole text present in the compose box input.
  * @param {Object} selection - Current {start, end} position of the cursor in the compose box input
@@ -16,13 +27,7 @@ export default (textWhole: string, selection: InputSelectionType) => {
     text = text.substring(0, start);
   }
 
-  const tokenIndex: number = Math.max(
-    text.lastIndexOf(':'),
-    text.lastIndexOf('#'),
-    ['\n', ' ', '#', ':'].includes(text[text.lastIndexOf('@') - 1]) || text.lastIndexOf('@') === 0 // to make sure `@` is not the part of email
-      ? text.lastIndexOf('@')
-      : -1,
-  );
+  const tokenIndex: number = getTokenIndex(text);
 
   const autocompleteType: string = tokenIndex !== -1 ? text[tokenIndex] : '';
   const filter: string =
