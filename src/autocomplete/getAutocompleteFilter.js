@@ -16,7 +16,7 @@ export default (textWhole: string, selection: InputSelectionType) => {
     text = text.substring(0, start);
   }
 
-  const lastIndex: number = Math.max(
+  const tokenIndex: number = Math.max(
     text.lastIndexOf(':'),
     text.lastIndexOf('#'),
     ['\n', ' ', '#', ':'].includes(text[text.lastIndexOf('@') - 1]) || text.lastIndexOf('@') === 0 // to make sure `@` is not the part of email
@@ -24,10 +24,10 @@ export default (textWhole: string, selection: InputSelectionType) => {
       : -1,
   );
 
-  const autocompleteType: string = lastIndex !== -1 ? text[lastIndex] : '';
+  const autocompleteType: string = tokenIndex !== -1 ? text[tokenIndex] : '';
   const filter: string =
-    text.length > lastIndex + 1 && !['\n', ' '].includes(text[lastIndex + 1])
-      ? text.substring(lastIndex + 1, text.length)
+    text.length > tokenIndex + 1 && !['\n', ' '].includes(text[tokenIndex + 1])
+      ? text.substring(tokenIndex + 1, text.length)
       : '';
 
   return { autocompleteType, filter };
