@@ -8,8 +8,9 @@ const getTokenIndex = (text: string): number => {
     ['\n', ' ', '#', ':'].includes(text[text.lastIndexOf('@') - 1]) || text.lastIndexOf('@') === 0 // to make sure `@` is not the part of email
       ? text.lastIndexOf('@')
       : -1;
-
-  return Math.max(lastIndexOfEmojiToken, lastIndexOfStreamToken, lastIndexOfPeopleToken);
+  const regExp = new RegExp(/( |\n|)(\:|\@|\#)/g);
+  const matches = text.match(regExp);
+  return !matches ? -1 : text.lastIndexOf(matches[matches.length - 1]);
 };
 
 /**
