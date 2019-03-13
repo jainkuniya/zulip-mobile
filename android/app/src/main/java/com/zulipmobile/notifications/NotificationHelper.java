@@ -31,7 +31,8 @@ public class NotificationHelper {
      * received them.
      */
     public static final class ConversationMap
-            extends LinkedHashMap<String, List<MessageInfo>> {}
+            extends LinkedHashMap<ConversationMapKey, MessageFcmMessage> {
+    }
 
     static Bitmap fetch(URL url) throws IOException {
         Log.i(TAG, "GAFT.fetch: Getting gravatar from url: " + url);
@@ -67,8 +68,8 @@ public class NotificationHelper {
             String name = extractName(entry.getKey());
             List<MessageInfo> messages = entry.getValue();
             Spannable sb = new SpannableString(String.format(Locale.ENGLISH, "%s%s: %s", name,
-                    mContext.getResources().getQuantityString(R.plurals.messages,messages.size(),messages.size()),
-                   messages.get(entry.getValue().size() - 1).getContent()));
+                    mContext.getResources().getQuantityString(R.plurals.messages, messages.size(), messages.size()),
+                    messages.get(entry.getValue().size() - 1).getContent()));
             sb.setSpan(new StyleSpan(android.graphics.Typeface.BOLD), 0, name.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
             inboxStyle.addLine(sb);
         }
@@ -111,34 +112,14 @@ public class NotificationHelper {
         return names;
     }
 
-    static void addConversationToMap(MessageFcmMessage fcmMessage, ConversationMap conversations) {
-        String key = buildKeyString(fcmMessage);
-        List<MessageInfo> messages = conversations.get(key);
-        MessageInfo messageInfo = new MessageInfo(fcmMessage.getContent(), fcmMessage.getZulipMessageId());
-        if (messages == null) {
-            messages = new ArrayList<>();
-        }
-        messages.add(messageInfo);
-        conversations.put(key, messages);
+    static void addMessageToMap(MessageFcmMessage fcmMessage, ConversationMap conversations) {
+        ConversationMapKey key = new ConversationMapKey(fcmMessage.getIdentity(), fcmMessage.getZulipMessageId());
+        conversations.put(key, fcmMessage);
     }
 
-    static void removeMessagesFromMap(ConversationMap conversations, Set<Integer> messageIds) {
-        // We don't have the information to compute what key we ought to find each message under,
-        // so just walk the whole thing.  If the user has >100 notifications, this linear scan
-        // won't be their worst problem anyway...
-        //
-        // TODO redesign this whole data structure, for many reasons.
-        final Iterator<List<MessageInfo>> it = conversations.values().iterator();
-        while (it.hasNext()) {
-            final List<MessageInfo> messages = it.next();
-            for (int i = messages.size() - 1; i >= 0; --i) {
-                if (messageIds.contains(messages.get(i).getMessageId())) {
-                    messages.remove(i);
-                }
-            }
-            if (messages.isEmpty()) {
-                it.remove();
-            }
+    static void removeMessagesFromMap(ConversationMap conversations, RemoveFcmMessage removeFcmMessage) {
+        for (Integer messageId : removeFcmMessage.getMessageIds()) {
+            conversations.remove(new ConversationMapKey(removeFcmMessage.getIdentity(), messageId));
         }
     }
 

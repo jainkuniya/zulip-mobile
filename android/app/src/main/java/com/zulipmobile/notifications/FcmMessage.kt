@@ -188,10 +188,28 @@ internal data class MessageFcmMessage(
 }
 
 internal data class RemoveFcmMessage(
+    val identity: Identity?,
     val messageIds: Set<Int>
 ) : FcmMessage() {
     companion object {
         fun fromFcmData(data: Map<String, String>): RemoveFcmMessage {
+            val identity = data["server"]?.let { serverHost ->
+                Identity(
+                    // `server` was added in server version 1.8.0
+                    // (released 2018-04-16; commit 014900c2e).
+                    serverHost = serverHost,
+
+                    // `realm_id` was added in the same commit as `server`.
+                    realmId = data.requireInt("realm_id"),
+
+                    // `realm_uri` was added in server version 1.9.0
+                    // (released 2018-11-06; commit 5f8d193bb).
+                    realmUri = data["realm_uri"]?.let { parseUrl(it, "realm_uri") },
+
+                    // `user` was already present in server version 1.6.0 .
+                    email = data.require("user")
+                )
+            }
             val messageIds = HashSet<Int>()
             data["zulip_message_id"]?.let {
                 messageIds.add(parseInt(it, "malformed message ID"))
@@ -199,7 +217,7 @@ internal data class RemoveFcmMessage(
             for (idStr in data["zulip_message_ids"]?.split(",") ?: emptyList()) {
                 messageIds.add(parseInt(idStr, "malformed message ID"))
             }
-            return RemoveFcmMessage(messageIds)
+            return RemoveFcmMessage(identity, messageIds)
         }
     }
 }

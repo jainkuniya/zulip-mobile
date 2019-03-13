@@ -69,7 +69,7 @@ public class FCMPushNotifications {
         }
 
         if (fcmMessage instanceof MessageFcmMessage) {
-            addConversationToMap((MessageFcmMessage) fcmMessage, conversations);
+            addMessageToMap((MessageFcmMessage) fcmMessage, conversations);
             updateNotification(context, conversations, (MessageFcmMessage) fcmMessage);
         } else if (fcmMessage instanceof RemoveFcmMessage) {
             removeMessagesFromMap(conversations, ((RemoveFcmMessage) fcmMessage).getMessageIds());
