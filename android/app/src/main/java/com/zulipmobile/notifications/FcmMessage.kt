@@ -8,7 +8,7 @@ import java.util.*
 /**
  * An identity belonging to this user in some Zulip org/realm.
  */
-internal data class Identity(
+data class Identity(
     /// The server's `EXTERNAL_HOST` setting.  This is a hostname,
     /// or a colon-separated hostname-plus-port.  For documentation,
     /// see zulip-server:zproject/prod_settings_template.py .
@@ -73,7 +73,7 @@ internal sealed class Recipient {
  * In our notification code we often say "FCM message" or "Zulip message"
  * to disambiguate between these two.
  */
-internal sealed class FcmMessage {
+sealed class FcmMessage {
     companion object {
         fun fromFcmData(data: Map<String, String>): FcmMessage =
             when (val eventType = data["event"]) {
