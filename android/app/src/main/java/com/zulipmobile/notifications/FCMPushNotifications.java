@@ -49,7 +49,7 @@ public class FCMPushNotifications {
 
     private static void logNotificationData(Bundle data) {
         data.keySet(); // Has the side effect of making `data.toString` more informative.
-        Log.v(TAG, "getPushNotification: " + data.toString(), new Throwable());
+        Log.v(NotificationHelper.TAG, "getPushNotification: " + data.toString(), new Throwable());
     }
 
     static void onReceived(Context context, ConversationMap conversations, Map<String, String> mapData) {
@@ -64,15 +64,15 @@ public class FCMPushNotifications {
         try {
             fcmMessage = FcmMessage.Companion.fromFcmData(mapData);
         } catch (FcmMessageParseException e) {
-            Log.w(TAG, "Ignoring malformed FCM message: " + e.getMessage());
+            Log.w(NotificationHelper.TAG, "Ignoring malformed FCM message: " + e.getMessage());
             return;
         }
 
         if (fcmMessage instanceof MessageFcmMessage) {
-            addConversationToMap((MessageFcmMessage) fcmMessage, conversations);
+            NotificationHelper.Companion.addConversationToMap((MessageFcmMessage) fcmMessage, conversations);
             updateNotification(context, conversations, (MessageFcmMessage) fcmMessage);
         } else if (fcmMessage instanceof RemoveFcmMessage) {
-            removeMessagesFromMap(conversations, ((RemoveFcmMessage) fcmMessage).getMessageIds());
+            NotificationHelper.Companion.removeMessagesFromMap(conversations, ((RemoveFcmMessage) fcmMessage).getMessageIds());
             if (conversations.isEmpty()) {
                 getNotificationManager(context).cancelAll();
             }
@@ -116,7 +116,7 @@ public class FCMPushNotifications {
         String senderFullName = fcmMessage.getSender().getFullName();
         URL avatarURL = fcmMessage.getSender().getAvatarURL();
         Long timeMs = fcmMessage.getTimeMs();
-        int totalMessagesCount = extractTotalMessagesCount(conversations);
+        int totalMessagesCount = NotificationHelper.Companion.extractTotalMessagesCount(conversations);
 
         if (BuildConfig.DEBUG) {
             builder.setSmallIcon(R.mipmap.ic_launcher);
@@ -137,7 +137,7 @@ public class FCMPushNotifications {
                 String displayTopic = r.getStream() + " > " + r.getTopic();
                 builder.setSubText("Message on " + displayTopic);
             }
-            Bitmap avatar = fetchAvatar(NotificationHelper.sizedURL(context,
+            Bitmap avatar = fetchAvatar(NotificationHelper.Companion.sizedURL(context,
                     avatarURL, 64));
             if (avatar != null) {
                 builder.setLargeIcon(avatar);
@@ -146,17 +146,17 @@ public class FCMPushNotifications {
         } else {
             String conversationTitle = String.format(Locale.ENGLISH, "%d messages in %d conversations", totalMessagesCount, conversations.size());
             builder.setContentTitle(conversationTitle);
-            builder.setContentText("Messages from " + TextUtils.join(",", extractNames(conversations)));
+            builder.setContentText("Messages from " + TextUtils.join(",", NotificationHelper.Companion.extractNames(conversations)));
             Notification.InboxStyle inboxStyle = new Notification.InboxStyle(builder);
             inboxStyle.setSummaryText(String.format(Locale.ENGLISH, "%d conversations", conversations.size()));
-            buildNotificationContent(conversations, inboxStyle, context);
+            NotificationHelper.Companion.buildNotificationContent(conversations, inboxStyle, context);
             builder.setStyle(inboxStyle);
         }
 
         try {
             ShortcutBadger.applyCount(context, totalMessagesCount);
         } catch (Exception e) {
-            Log.e(TAG, "BADGE ERROR: " + e.toString());
+            Log.e(NotificationHelper.TAG, "BADGE ERROR: " + e.toString());
         }
 
         builder.setWhen(timeMs);
@@ -189,9 +189,9 @@ public class FCMPushNotifications {
 
     private static Bitmap fetchAvatar(URL url) {
         try {
-            return NotificationHelper.fetch(url);
+            return NotificationHelper.Companion.fetch(url);
         } catch (IOException e) {
-            Log.e(TAG, "ERROR: " + e.toString());
+            Log.e(NotificationHelper.TAG, "ERROR: " + e.toString());
         }
         return null;
     }
@@ -200,16 +200,16 @@ public class FCMPushNotifications {
         logNotificationData(data);
         NotifyReact.notifyReact(application, data);
         getNotificationManager((Context) application).cancelAll();
-        clearConversations(conversations);
+        NotificationHelper.Companion.clearConversations(conversations);
         try {
             ShortcutBadger.removeCount((Context) application);
         } catch (Exception e) {
-            Log.e(TAG, "BADGE ERROR: " + e.toString());
+            Log.e(NotificationHelper.TAG, "BADGE ERROR: " + e.toString());
         }
     }
 
     static void onClear (Context context, ConversationMap conversations) {
-        clearConversations(conversations);
+        NotificationHelper.Companion.clearConversations(conversations);
         getNotificationManager(context).cancelAll();
     }
 }

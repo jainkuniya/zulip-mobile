@@ -6,8 +6,6 @@ import android.util.Log;
 import com.facebook.react.bridge.*;
 import com.google.firebase.iid.FirebaseInstanceId;
 
-import static com.zulipmobile.notifications.NotificationHelper.TAG;
-
 class NotificationsModule extends ReactContextBaseJavaModule {
 
     static Bundle initialNotification = null;
@@ -38,10 +36,10 @@ class NotificationsModule extends ReactContextBaseJavaModule {
             // If so, the next time the app is launched, this method will be invoked again
             // by our NotificationsModule#initialize, by which point there certainly is
             // a React context; so we'll learn the new token then.
-            Log.w(TAG, "Got token before React context initialized");
+            Log.w(NotificationHelper.TAG, "Got token before React context initialized");
             return;
         }
-        Log.i(TAG, "Got token; emitting event");
+        Log.i(NotificationHelper.TAG, "Got token; emitting event");
         NotifyReact.emit(reactContext, "remoteNotificationsRegistered", token);
     }
 

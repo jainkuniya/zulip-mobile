@@ -8,7 +8,7 @@ import java.util.*
 /**
  * An identity belonging to this user in some Zulip org/realm.
  */
-internal data class Identity(
+data class Identity(
     /// The server's `EXTERNAL_HOST` setting.  This is a hostname,
     /// or a colon-separated hostname-plus-port.  For documentation,
     /// see zulip-server:zproject/prod_settings_template.py .
@@ -32,7 +32,7 @@ internal data class Identity(
 /**
  * Data about the Zulip user that sent a message.
  */
-internal data class Sender(
+data class Sender(
     val id: Int?,
     val email: String,
     val avatarURL: URL,
@@ -42,7 +42,7 @@ internal data class Sender(
 /**
  * Data identifying where a Zulip message was sent.
  */
-internal sealed class Recipient {
+sealed class Recipient {
     /** A 1:1 private message.  Must have been sent to this user, so nothing more to say. */
     object Pm : Recipient()
 
@@ -74,7 +74,7 @@ internal sealed class Recipient {
  * In our notification code we often say "FCM message" or "Zulip message"
  * to disambiguate between these two.
  */
-internal sealed class FcmMessage {
+sealed class FcmMessage {
     companion object {
         fun fromFcmData(data: Map<String, String>): FcmMessage =
             when (val eventType = data["event"]) {
@@ -95,7 +95,7 @@ internal sealed class FcmMessage {
  * The word "message" can be confusing in this context.
  * See `FcmMessage` for discussion.
  */
-internal data class MessageFcmMessage(
+data class MessageFcmMessage(
     val identity: Identity?,
     val sender: Sender,
     val zulipMessageId: Int,
