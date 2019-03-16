@@ -188,18 +188,37 @@ data class MessageFcmMessage(
 }
 
 internal data class RemoveFcmMessage(
+    val identity: Identity?,
     val messageIds: Set<Int>
 ) : FcmMessage() {
     companion object {
         fun fromFcmData(data: Map<String, String>): RemoveFcmMessage {
             val messageIds = HashSet<Int>()
+            val identity = data["server"]?.let { serverHost ->
+                Identity(
+                    // `server` was added in server version 1.8.0
+                    // (released 2018-04-16; commit 014900c2e).
+                    serverHost = serverHost,
+
+                    // `realm_id` was added in the same commit as `server`.
+                    realmId = data.require("realm_id").parseInt("realm_id"),
+
+                    // `realm_uri` was added in server version 1.9.0
+                    // (released 2018-11-06; commit 5f8d193bb).
+                    realmUri = data["realm_uri"]?.parseUrl("realm_uri"),
+
+                    // `user` was already present in server version 1.6.0 .
+                    email = "" //TODO
+                )
+            }
+
             data["zulip_message_id"]?.parseInt("zulip_message_id")?.let {
                 messageIds.add(it)
             }
             data["zulip_message_ids"]?.parseCommaSeparatedInts("zulip_message_ids")?.let {
                 messageIds.addAll(it)
             }
-            return RemoveFcmMessage(messageIds)
+            return RemoveFcmMessage(identity, messageIds)
         }
     }
 }
