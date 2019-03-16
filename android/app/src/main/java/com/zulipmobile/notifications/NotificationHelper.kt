@@ -2,7 +2,6 @@ package com.zulipmobile.notifications
 
 import android.app.Notification
 import android.content.Context
-import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.text.Spannable
@@ -14,63 +13,29 @@ import java.io.IOException
 import java.io.InputStream
 import java.net.MalformedURLException
 import java.net.URL
-import java.net.URLConnection
 import java.util.*
 
 import com.zulipmobile.R
+import kotlin.collections.ArrayList
+import kotlin.collections.LinkedHashMap
 
 class NotificationHelper {
     companion object {
         const val TAG = "ZulipNotif"
 
-        /**
-         * Formats -
-         * stream message - fullName:streamName:'stream'
-         * group message - fullName:Recipients:'group'
-         * private message - fullName:Email:'private'
-         */
-        private fun buildKeyString(fcmMessage: MessageFcmMessage): String {
-            val recipient = fcmMessage.recipient
-            return if (recipient is Recipient.Stream)
-                String.format("%s:%s:stream", fcmMessage.sender.fullName,
-                    recipient.stream)
-            else if (recipient is Recipient.GroupPm) {
-                String.format("%s:%s:group", fcmMessage.sender.fullName,
-                    recipient.getPmUsersString())
-            } else {
-                String.format("%s:%s:private", fcmMessage.sender.fullName,
-                    fcmMessage.sender.email)
-            }
+        private fun buildKey(fcmMessage: MessageFcmMessage): ConversationMapKey {
+            return ConversationMapKey(fcmMessage.identity, fcmMessage.zulipMessageId)
         }
 
-        fun addConversationToMap(fcmMessage: MessageFcmMessage, conversations: ConversationMap) {
-            val key = buildKeyString(fcmMessage)
-            var messages: MutableList<MessageInfo>? = conversations[key]
-            val messageInfo = MessageInfo(fcmMessage.content, fcmMessage.zulipMessageId)
-            if (messages == null) {
-                messages = ArrayList()
-            }
-            messages.add(messageInfo)
-            conversations[key] = messages
+        fun addMessagesToMap(fcmMessage: MessageFcmMessage, conversations: ConversationMap) {
+            val key = buildKey(fcmMessage)
+            conversations[key] = fcmMessage
         }
 
-        fun removeMessagesFromMap(conversations: ConversationMap, messageIds: Set<Int>) {
-            // We don't have the information to compute what key we ought to find each message under,
-            // so just walk the whole thing.  If the user has >100 notifications, this linear scan
-            // won't be their worst problem anyway...
-            //
-            // TODO redesign this whole data structure, for many reasons.
-            val it = conversations.values.iterator()
+        fun removeMessagesFromMap(fcmMessage: RemoveFcmMessage, conversations: ConversationMap) {
+            val it = fcmMessage.messageIds.iterator()
             while (it.hasNext()) {
-                val messages: MutableList<MessageInfo> = it.next()
-                for (i in messages.indices.reversed()) {
-                    if (messageIds.contains(messages[i].messageId)) {
-                        messages.removeAt(i)
-                    }
-                }
-                if (messages.isEmpty()) {
-                    it.remove()
-                }
+                conversations.remove(ConversationMapKey(fcmMessage.identity, it.next()))
             }
         }
 
@@ -108,8 +73,45 @@ class NotificationHelper {
             return key.split(":".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()[0]
         }
 
-        fun buildNotificationContent(conversations: ConversationMap, inboxStyle: Notification.InboxStyle, mContext: Context) {
-            for ((key, messages) in conversations) {
+        /**
+         * Formats -
+         * stream message - fullName:streamName:'stream'
+         * group message - fullName:Recipients:'group'
+         * private message - fullName:Email:'private'
+         */
+        private fun buildKeyForLegacyNotification(fcmMessage: MessageFcmMessage): String {
+            val recipient = fcmMessage.recipient
+            return if (recipient is Recipient.Stream)
+                String.format("%s:%s:stream", fcmMessage.sender.fullName,
+                    recipient.stream)
+            else if (recipient is Recipient.GroupPm)
+                String.format("%s:%s:group", fcmMessage.sender.fullName,
+                    recipient.getPmUsersString())
+            else {
+                String.format("%s:%s:private", fcmMessage.sender.fullName,
+                    fcmMessage.sender.email)
+            }
+        }
+
+        fun getNarrowMapForLegacyNotification(conversations: ConversationMap): LinkedHashMap<String, MutableList<MessageInfo>> {
+            // build map of narrow string as key and list of messages in that narrow
+            val narrowMap: LinkedHashMap<String, MutableList<MessageInfo>> = LinkedHashMap()
+
+            for ((_, message) in conversations) {
+                val key: String = buildKeyForLegacyNotification(message)
+                var messageList: MutableList<MessageInfo>? = narrowMap[key]
+                if (messageList == null) {
+                    messageList = ArrayList()
+                }
+                messageList.add(MessageInfo(message.content, message.zulipMessageId))
+                narrowMap[key] = messageList
+            }
+            return narrowMap
+        }
+
+        fun buildLegacyNotificationContent(narrowMap: LinkedHashMap<String, MutableList<MessageInfo>>,
+                                           inboxStyle: Notification.InboxStyle, mContext: Context) {
+            for ((key, messages) in narrowMap) {
                 val name = extractName(key)
                 val sb = SpannableString(String.format(Locale.ENGLISH, "%s%s: %s", name,
                     mContext.resources.getQuantityString(R.plurals.messages, messages.size, messages.size),
@@ -119,24 +121,36 @@ class NotificationHelper {
             }
         }
 
-        fun extractNames(conversations: ConversationMap): Array<String?> {
-            val names = arrayOfNulls<String>(conversations.size)
+        fun extractNamesForLegacyNotification(narrowMap: LinkedHashMap<String, MutableList<MessageInfo>>): Array<String?> {
+            val names = arrayOfNulls<String>(narrowMap.size)
             var index = 0
-            for ((key) in conversations) {
+            for ((key) in narrowMap) {
                 names[index++] = key.split(":".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()[0]
             }
             return names
         }
 
         fun extractTotalMessagesCount(conversations: ConversationMap): Int {
-            var totalNumber = 0
-            for ((_, value) in conversations) {
-                totalNumber += value.size
-            }
-            return totalNumber
+            return conversations.size
         }
     }
 
+    class ConversationMapKey(
+        var identity: Identity?,
+        var messageId: Int
+    ){
+        @Override
+        override fun equals(other: Any?): Boolean {
+            //TODO implement this
+            return super.equals(other)
+        }
 
-    class ConversationMap : LinkedHashMap<String, MutableList<MessageInfo>>()
+        override fun hashCode(): Int {
+            var result = identity?.hashCode() ?: 0
+            result = 31 * result + messageId
+            return result
+        }
+    }
+
+    class ConversationMap : LinkedHashMap<ConversationMapKey, MessageFcmMessage>()
 }

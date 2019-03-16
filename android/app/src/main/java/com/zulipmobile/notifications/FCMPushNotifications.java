@@ -17,6 +17,8 @@ import android.util.Log;
 import com.facebook.react.ReactApplication;
 import java.io.IOException;
 import java.net.URL;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import me.leolin.shortcutbadger.ShortcutBadger;
@@ -24,8 +26,6 @@ import me.leolin.shortcutbadger.ShortcutBadger;
 import com.zulipmobile.BuildConfig;
 import com.zulipmobile.R;
 import com.zulipmobile.notifications.NotificationHelper.*;
-
-import static com.zulipmobile.notifications.NotificationHelper.*;
 
 public class FCMPushNotifications {
 
@@ -69,10 +69,10 @@ public class FCMPushNotifications {
         }
 
         if (fcmMessage instanceof MessageFcmMessage) {
-            NotificationHelper.Companion.addConversationToMap((MessageFcmMessage) fcmMessage, conversations);
+            NotificationHelper.Companion.addMessagesToMap((MessageFcmMessage) fcmMessage, conversations);
             updateNotification(context, conversations, (MessageFcmMessage) fcmMessage);
         } else if (fcmMessage instanceof RemoveFcmMessage) {
-            NotificationHelper.Companion.removeMessagesFromMap(conversations, ((RemoveFcmMessage) fcmMessage).getMessageIds());
+            NotificationHelper.Companion.removeMessagesFromMap((RemoveFcmMessage)fcmMessage, conversations);
             if (conversations.isEmpty()) {
                 getNotificationManager(context).cancelAll();
             }
@@ -116,6 +116,9 @@ public class FCMPushNotifications {
         String senderFullName = fcmMessage.getSender().getFullName();
         URL avatarURL = fcmMessage.getSender().getAvatarURL();
         Long timeMs = fcmMessage.getTimeMs();
+
+        LinkedHashMap<String, List<MessageInfo>> narrowMap  = NotificationHelper.Companion.getNarrowMapForLegacyNotification(conversations);
+
         int totalMessagesCount = NotificationHelper.Companion.extractTotalMessagesCount(conversations);
 
         if (BuildConfig.DEBUG) {
@@ -124,7 +127,7 @@ public class FCMPushNotifications {
             builder.setSmallIcon(R.drawable.zulip_notification);
         }
 
-        if (conversations.size() == 1) {
+        if (narrowMap.size() == 1) {
             //Only one 1 notification therefore no using of big view styles
             if (totalMessagesCount > 1) {
                 builder.setContentTitle(senderFullName + " (" + totalMessagesCount + ")");
@@ -145,11 +148,12 @@ public class FCMPushNotifications {
             builder.setStyle(new Notification.BigTextStyle().bigText(content));
         } else {
             String conversationTitle = String.format(Locale.ENGLISH, "%d messages in %d conversations", totalMessagesCount, conversations.size());
+
             builder.setContentTitle(conversationTitle);
-            builder.setContentText("Messages from " + TextUtils.join(",", NotificationHelper.Companion.extractNames(conversations)));
+            builder.setContentText("Messages from " + TextUtils.join(",", NotificationHelper.Companion.extractNamesForLegacyNotification(narrowMap)));
             Notification.InboxStyle inboxStyle = new Notification.InboxStyle(builder);
             inboxStyle.setSummaryText(String.format(Locale.ENGLISH, "%d conversations", conversations.size()));
-            NotificationHelper.Companion.buildNotificationContent(conversations, inboxStyle, context);
+            NotificationHelper.Companion.buildLegacyNotificationContent(narrowMap, inboxStyle, context);
             builder.setStyle(inboxStyle);
         }
 
