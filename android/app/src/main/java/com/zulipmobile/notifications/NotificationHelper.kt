@@ -60,11 +60,11 @@ class NotificationHelper {
             val px = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
                 dpSize, r.displayMetrics)
             val query = if (url.query != null) url.query + "&s=" + px else "s=$px"
-            try {
-                return URL(url, "?$query")
+            return try {
+                URL(url, "?$query")
             } catch (e: MalformedURLException) {
                 Log.e(TAG, "ERROR: $e")
-                return null
+                null
             }
 
         }
