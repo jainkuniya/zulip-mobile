@@ -47,7 +47,7 @@ private fun logNotificationData(data: Bundle) {
     Log.v(TAG, "getPushNotification: $data", Throwable())
 }
 
-internal fun onReceived(context: Context, conversations: ConversationMap, mapData: Map<String, String>) {
+internal fun onReceived(context: Context, allConversations: AllConversationMap, mapData: Map<String, String>) {
     // TODO refactor to not need this; reflects a juxtaposition of FCM with old GCM interfaces.
     val data = Bundle()
     for ((key, value) in mapData) {
@@ -64,23 +64,23 @@ internal fun onReceived(context: Context, conversations: ConversationMap, mapDat
     }
 
     if (fcmMessage is MessageFcmMessage) {
-        addConversationToMap(fcmMessage, conversations)
-        updateNotification(context, conversations, fcmMessage)
+        addConversationToMap(fcmMessage, allConversations)
+        updateNotification(context, allConversations, fcmMessage)
     } else if (fcmMessage is RemoveFcmMessage) {
-        removeMessagesFromMap(conversations, fcmMessage.messageIds)
-        if (conversations.isEmpty()) {
+        removeMessagesFromMap(allConversations, fcmMessage.messageIds)
+        if (allConversations.isEmpty()) {
             getNotificationManager(context).cancelAll()
         }
     }
 }
 
 private fun updateNotification(
-    context: Context, conversations: ConversationMap, fcmMessage: MessageFcmMessage) {
-    if (conversations.isEmpty()) {
+    context: Context, allConversations: AllConversationMap, fcmMessage: MessageFcmMessage) {
+    if (allConversations.isEmpty()) {
         getNotificationManager(context).cancelAll()
         return
     }
-    val notification = getNotificationBuilder(context, conversations, fcmMessage).build()
+    val notification = getNotificationBuilder(context, allConversations, fcmMessage).build()
     getNotificationManager(context).notify(NOTIFICATION_ID, notification)
 }
 
@@ -91,7 +91,7 @@ private fun getNotificationSoundUri(context: Context): Uri {
 }
 
 private fun getNotificationBuilder(
-    context: Context, conversations: ConversationMap, fcmMessage: MessageFcmMessage): Notification.Builder {
+    context: Context, allConversations: AllConversationMap, fcmMessage: MessageFcmMessage): Notification.Builder {
     val builder = if (Build.VERSION.SDK_INT >= 26)
         Notification.Builder(context, CHANNEL_ID)
     else
@@ -105,7 +105,7 @@ private fun getNotificationBuilder(
 
     builder.setAutoCancel(true)
 
-    val totalMessagesCount = extractTotalMessagesCount(conversations)
+    val totalMessagesCount = extractTotalMessagesCount(allConversations)
 
     if (BuildConfig.DEBUG) {
         builder.setSmallIcon(R.mipmap.ic_launcher)
@@ -113,7 +113,7 @@ private fun getNotificationBuilder(
         builder.setSmallIcon(R.drawable.zulip_notification)
     }
 
-    if (conversations.size == 1) {
+    if (allConversations.size == 1) {
         //Only one 1 notification therefore no using of big view styles
         if (totalMessagesCount > 1) {
             builder.setContentTitle("${fcmMessage.sender.fullName} ($totalMessagesCount)")
@@ -130,11 +130,11 @@ private fun getNotificationBuilder(
             ?.let { builder.setLargeIcon(it) }
         builder.setStyle(Notification.BigTextStyle().bigText(fcmMessage.content))
     } else {
-        builder.setContentTitle("$totalMessagesCount messages in ${conversations.size} conversations")
-        builder.setContentText("Messages from ${TextUtils.join(",", extractNames(conversations))}")
+        builder.setContentTitle("$totalMessagesCount messages in ${allConversations.size} conversations")
+        builder.setContentText("Messages from ${TextUtils.join(",", extractNames(allConversations))}")
         val inboxStyle = Notification.InboxStyle(builder)
-        inboxStyle.setSummaryText("${conversations.size} conversations")
-        buildNotificationContent(conversations, inboxStyle, context)
+        inboxStyle.setSummaryText("${allConversations.size} conversations")
+        buildNotificationContent(allConversations, inboxStyle, context)
         builder.setStyle(inboxStyle)
     }
 
@@ -171,11 +171,11 @@ private fun getNotificationBuilder(
     return builder
 }
 
-internal fun onOpened(application: ReactApplication, conversations: ConversationMap, data: Bundle) {
+internal fun onOpened(application: ReactApplication, allConversations: AllConversationMap, data: Bundle) {
     logNotificationData(data)
     NotifyReact.notifyReact(application, data)
     getNotificationManager(application as Context).cancelAll()
-    clearConversations(conversations)
+    clearConversations(allConversations)
     try {
         ShortcutBadger.removeCount(application as Context)
     } catch (e: Exception) {
@@ -184,7 +184,7 @@ internal fun onOpened(application: ReactApplication, conversations: Conversation
 
 }
 
-internal fun onClear(context: Context, conversations: ConversationMap) {
-    clearConversations(conversations)
+internal fun onClear(context: Context, allConversations: AllConversationMap) {
+    clearConversations(allConversations)
     getNotificationManager(context).cancelAll()
 }

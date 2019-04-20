@@ -19,13 +19,13 @@ import io.sentry.RNSentryPackage;
 import java.util.Arrays;
 import java.util.List;
 
-import com.zulipmobile.notifications.ConversationMap;
+import com.zulipmobile.notifications.AllConversationMap;
 import com.zulipmobile.notifications.FCMPushNotifications;
 import com.zulipmobile.notifications.NotificationsPackage;
 
 public class MainApplication extends Application implements ReactApplication {
-    private ConversationMap conversations;
-    public ConversationMap getConversations() { return conversations; }
+    private AllConversationMap allConversations;
+    public AllConversationMap getAllConversations() { return allConversations; }
 
     private final ReactNativeHost mReactNativeHost = new ReactNativeHost(this) {
         @Override
@@ -68,6 +68,6 @@ public class MainApplication extends Application implements ReactApplication {
         super.onCreate();
         FCMPushNotifications.createNotificationChannel(this);
         SoLoader.init(this, /* native exopackage */ false);
-        conversations = new ConversationMap();
+        allConversations = new AllConversationMap();
     }
 }

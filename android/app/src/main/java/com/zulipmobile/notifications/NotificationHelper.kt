@@ -29,7 +29,7 @@ val TAG = "ZulipNotif"
  * received them.
  */
 open class ByConversationMap : LinkedHashMap<String, MutableList<MessageInfo>>()
-class ConversationMap : ByConversationMap()
+class AllConversationMap : ByConversationMap()
 
 fun fetchBitmap(url: URL): Bitmap? {
     Log.i(TAG, "GAFT.fetch: Getting gravatar from url: $url")
@@ -57,8 +57,8 @@ private fun extractName(key: String): String {
     return key.split(":".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()[0]
 }
 
-fun buildNotificationContent(conversations: ConversationMap, inboxStyle: Notification.InboxStyle, mContext: Context) {
-    for ((key, messages) in conversations) {
+fun buildNotificationContent(allConversations: AllConversationMap, inboxStyle: Notification.InboxStyle, mContext: Context) {
+    for ((key, messages) in allConversations) {
         val name = extractName(key)
         val sb = SpannableString(String.format(Locale.ENGLISH, "%s%s: %s", name,
             mContext.resources.getQuantityString(R.plurals.messages, messages.size, messages.size),
@@ -68,9 +68,9 @@ fun buildNotificationContent(conversations: ConversationMap, inboxStyle: Notific
     }
 }
 
-fun extractTotalMessagesCount(conversations: ConversationMap): Int {
+fun extractTotalMessagesCount(allConversations: AllConversationMap): Int {
     var totalNumber = 0
-    for ((_, value) in conversations) {
+    for ((_, value) in allConversations) {
         totalNumber += value.size
     }
     return totalNumber
@@ -94,32 +94,32 @@ private fun buildKeyString(fcmMessage: MessageFcmMessage): String {
     }
 }
 
-fun extractNames(conversations: ConversationMap): ArrayList<String> {
+fun extractNames(allConversations: AllConversationMap): ArrayList<String> {
     val names = arrayListOf<String>()
-    for ((key) in conversations) {
+    for ((key) in allConversations) {
         names.add(key.split(":".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()[0])
     }
     return names
 }
 
-fun addConversationToMap(fcmMessage: MessageFcmMessage, conversations: ConversationMap) {
+fun addConversationToMap(fcmMessage: MessageFcmMessage, allConversations: AllConversationMap) {
     val key = buildKeyString(fcmMessage)
-    var messages: MutableList<MessageInfo>? = conversations[key]
+    var messages: MutableList<MessageInfo>? = allConversations[key]
     val messageInfo = MessageInfo(fcmMessage.content, fcmMessage.zulipMessageId)
     if (messages == null) {
         messages = ArrayList()
     }
     messages.add(messageInfo)
-    conversations[key] = messages
+    allConversations[key] = messages
 }
 
-fun removeMessagesFromMap(conversations: ConversationMap, messageIds: Set<Int>) {
+fun removeMessagesFromMap(allConversations: AllConversationMap, messageIds: Set<Int>) {
     // We don't have the information to compute what key we ought to find each message under,
     // so just walk the whole thing.  If the user has >100 notifications, this linear scan
     // won't be their worst problem anyway...
     //
     // TODO redesign this whole data structure, for many reasons.
-    val it = conversations.values.iterator()
+    val it = allConversations.values.iterator()
     while (it.hasNext()) {
         val messages: MutableList<MessageInfo> = it.next()
         for (i in messages.indices.reversed()) {
@@ -133,6 +133,6 @@ fun removeMessagesFromMap(conversations: ConversationMap, messageIds: Set<Int>) 
     }
 }
 
-fun clearConversations(conversations: ConversationMap) {
-    conversations.clear()
+fun clearConversations(allConversations: AllConversationMap) {
+    allConversations.clear()
 }
