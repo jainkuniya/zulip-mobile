@@ -57,8 +57,8 @@ private fun extractName(key: String): String {
     return key.split(":".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()[0]
 }
 
-fun buildNotificationContent(allConversations: AllConversationMap, inboxStyle: Notification.InboxStyle, mContext: Context) {
-    for ((key, messages) in allConversations) {
+fun buildNotificationContent(byConversations: ByConversationMap, inboxStyle: Notification.InboxStyle, mContext: Context) {
+    for ((key, messages) in byConversations) {
         val name = extractName(key)
         val sb = SpannableString(String.format(Locale.ENGLISH, "%s%s: %s", name,
             mContext.resources.getQuantityString(R.plurals.messages, messages.size, messages.size),
