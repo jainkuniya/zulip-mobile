@@ -94,9 +94,9 @@ private fun buildKeyString(fcmMessage: MessageFcmMessage): String {
     }
 }
 
-fun extractNames(allConversations: AllConversationMap): ArrayList<String> {
+fun extractNames(byConversations: ByConversationMap): ArrayList<String> {
     val names = arrayListOf<String>()
-    for ((key) in allConversations) {
+    for ((key) in byConversations) {
         names.add(key.split(":".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()[0])
     }
     return names
