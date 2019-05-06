@@ -22,7 +22,6 @@ import com.zulipmobile.BuildConfig
 import com.zulipmobile.R
 
 private val CHANNEL_ID = "default"
-private val NOTIFICATION_ID = 435
 
 @JvmField
 val ACTION_CLEAR = "ACTION_CLEAR"

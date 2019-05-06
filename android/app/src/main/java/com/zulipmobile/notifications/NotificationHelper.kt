@@ -20,6 +20,8 @@ import java.util.*
 @JvmField
 val TAG = "ZulipNotif"
 
+private val NOTIFICATION_ID = 435
+
 /**
  * The Zulip messages we're showing as a notification, grouped by conversation.
  *
@@ -146,4 +148,10 @@ fun removeMessagesFromMap(conversations: ConversationMap, removeFcmMessage: Remo
 
 fun clearConversations(conversations: ConversationMap) {
     conversations.clear()
+}
+
+fun getNotificationId(identity: Identity?): Int {
+    var notificationId = NOTIFICATION_ID
+    identity?.let { notificationId = Integer.parseInt("${Integer.toString(it.realmId)}${it.userId}") }
+    return notificationId
 }
