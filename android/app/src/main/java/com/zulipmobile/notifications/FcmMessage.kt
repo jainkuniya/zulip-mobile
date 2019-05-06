@@ -130,6 +130,22 @@ data class MessageFcmMessage(
         return bundle
     }
 
+    /**
+     * All the data to dismiss notification for this particular identity
+     * [ACTION_CLEAR] in [NotificationIntentService]
+     */
+
+    fun dataForClearAction(identity: Identity?): Bundle {
+        val bundle = Bundle()
+        identity?.let {
+            bundle.putString("server_host", it.serverHost)
+            bundle.putInt("realm_id", it.realmId)
+            bundle.putString("realm_url", it.realmUri.toString())
+            it.userId?.let { userId -> bundle.putInt("user_id", userId) }
+        }
+        return bundle
+    }
+
     companion object {
         fun fromFcmData(data: Map<String, String>): MessageFcmMessage {
             val recipientType = data.require("recipient_type")
