@@ -16,6 +16,9 @@ import java.io.IOException
 import java.io.InputStream
 import java.net.URL
 import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.collections.LinkedHashMap
+
 
 @JvmField
 val TAG = "ZulipNotif"
@@ -43,7 +46,7 @@ open class ByConversationMap : LinkedHashMap<String, MutableList<MessageFcmMessa
  * a separate notification for each [Identity], this type will become
  * a collection of one [ByConversationMap] per [Identity].
  */
-class ConversationMap : ByConversationMap()
+class ConversationMap : LinkedHashMap<Identity?, ByConversationMap>()
 
 fun fetchBitmap(url: URL): Bitmap? {
     Log.i(TAG, "GAFT.fetch: Getting gravatar from url: $url")
@@ -117,13 +120,18 @@ fun extractNames(conversations: ByConversationMap): ArrayList<String> {
 }
 
 fun addConversationToMap(fcmMessage: MessageFcmMessage, conversations: ConversationMap) {
+    var byConversations: ByConversationMap? = conversations[fcmMessage.identity]
+    if (byConversations == null) {
+        byConversations = ByConversationMap()
+    }
     val key = buildKeyString(fcmMessage)
-    var messages: MutableList<MessageFcmMessage>? = conversations[key]
+    var messages: MutableList<MessageFcmMessage>? = byConversations[key]
     if (messages == null) {
         messages = ArrayList()
     }
     messages.add(fcmMessage)
-    conversations[key] = messages
+    byConversations[key] = messages
+    conversations[fcmMessage.identity] = byConversations
 }
 
 fun removeMessagesFromMap(conversations: ConversationMap, removeFcmMessage: RemoveFcmMessage) {
@@ -132,7 +140,8 @@ fun removeMessagesFromMap(conversations: ConversationMap, removeFcmMessage: Remo
     // won't be their worst problem anyway...
     //
     // TODO redesign this whole data structure, for many reasons.
-    val it = conversations.values.iterator()
+    val byConversations: ByConversationMap? = conversations[removeFcmMessage.identity] ?: return
+    val it = byConversations!!.values.iterator()
     while (it.hasNext()) {
         val messages: MutableList<MessageFcmMessage> = it.next()
         for (i in messages.indices.reversed()) {
@@ -146,8 +155,9 @@ fun removeMessagesFromMap(conversations: ConversationMap, removeFcmMessage: Remo
     }
 }
 
-fun clearConversations(conversations: ConversationMap) {
-    conversations.clear()
+fun clearConversations(conversations: ConversationMap, identity: Identity) {
+    val byConversations: ByConversationMap? = conversations[identity] ?: return
+    byConversations?.clear()
 }
 
 fun getNotificationId(identity: Identity?): Int {

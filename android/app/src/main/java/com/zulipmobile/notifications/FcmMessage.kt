@@ -109,7 +109,7 @@ data class MessageFcmMessage(
      * For the corresponding type definition on the JS side, see `Notification`
      * in `notification/index.js`.
      */
-    fun dataForOpen(): Bundle {
+    fun dataForOpen(identity: Identity?): Bundle {
         val bundle = Bundle()
         when (recipient) {
             // NOTE: Keep the JS-side type definition in sync with this code.
@@ -127,6 +127,7 @@ data class MessageFcmMessage(
                 bundle.putString("sender_email", sender.email)
             }
         }
+        bundle.putAll(dataForClearAction(identity))
         return bundle
     }
 
@@ -265,3 +266,13 @@ private fun String.parseCommaSeparatedInts(loc: String): Sequence<Int> =
     splitToSequence(",").map { it.parseInt(loc) }
 
 class FcmMessageParseException(errorMessage: String) : RuntimeException(errorMessage)
+
+@Throws(MalformedURLException::class)
+fun getIdentityFromNotificationExtraData(data: Bundle): Identity {
+    val url = URL(data.getString("realm_url", ""))
+    return Identity(
+        data.getString("server_host", ""),
+        data.getInt("realm_id"),
+        url,
+        data.getInt("user_id"))
+}
