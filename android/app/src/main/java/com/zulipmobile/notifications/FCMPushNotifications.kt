@@ -161,8 +161,10 @@ private fun getNotificationBuilder(
     builder.setDefaults(Notification.DEFAULT_VIBRATE or Notification.DEFAULT_LIGHTS)
 
     if (Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT) {
-        val dismissIntent = Intent(context, NotificationIntentReceiver::class.java)
+        val uri = Uri.fromParts("zulip", "msgid:${fcmMessage.zulipMessageId}", "")
+        val dismissIntent = Intent(ACTION_CLEAR, null, context, NotificationIntentReceiver::class.java)
         dismissIntent.action = ACTION_CLEAR
+        dismissIntent.putExtra("data", fcmMessage.dataForClearAction())
         val piDismiss = PendingIntent.getBroadcast(context, 0, dismissIntent, 0)
         val action = Notification.Action(android.R.drawable.ic_menu_close_clear_cancel, "Clear", piDismiss)
         builder.addAction(action)
@@ -179,11 +181,11 @@ private fun getNotificationBuilder(
     return builder
 }
 
-internal fun onOpened(application: ReactApplication, conversations: ConversationMap, data: Bundle) {
+internal fun onOpened(application: ReactApplication, conversations: ConversationMap, data: Bundle, identity: Identity) {
     logNotificationData(data)
     NotifyReact.notifyReact(application, data)
     getNotificationManager(application as Context).cancelAll()
-    clearConversations(conversations)
+    clearConversations(conversations, identity)
     try {
         ShortcutBadger.removeCount(application as Context)
     } catch (e: Exception) {
@@ -192,7 +194,7 @@ internal fun onOpened(application: ReactApplication, conversations: Conversation
 
 }
 
-internal fun onClear(context: Context, conversations: ConversationMap) {
-    clearConversations(conversations)
+internal fun onClear(context: Context, conversations: ConversationMap, identity: Identity) {
+    clearConversations(conversations, identity)
     getNotificationManager(context).cancelAll()
 }

@@ -5,17 +5,26 @@ import android.content.Context
 import android.content.Intent
 import android.content.Intent.ACTION_VIEW
 import com.zulipmobile.MainApplication
+import java.net.URL
 
 class NotificationIntentReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context?, intent: Intent?) {
         val applicationContext = context!!.applicationContext as? MainApplication ?: return
         val conversations = applicationContext.conversations
-        if (ACTION_CLEAR == intent!!.action) {
-            onClear(applicationContext, conversations)
-        } else if (ACTION_VIEW == intent.action) {
-            val data = intent.getBundleExtra(EXTRA_NOTIFICATION_DATA)
-            onOpened(applicationContext, conversations, data)
-        }
+
+        val data = intent!!.getBundleExtra("data")
+        System.out.print("fdfdas")
+//        val identity = Identity(
+//            data.getString("server_host"),
+//            data.getInt("realm_id"),
+//            URL(data.getString("realm_url")),
+//            data.getInt("user_id"))
+//
+//        if (ACTION_CLEAR == intent.action) {
+//            onClear(applicationContext, conversations, identity)
+//        } else if (ACTION_VIEW == intent.action) {
+//            onOpened(applicationContext, conversations, data, identity)
+//        }
     }
 
 }
