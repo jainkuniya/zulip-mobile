@@ -103,9 +103,9 @@ private fun getNotificationBuilder(
         Notification.Builder(context)
 
     val uri = Uri.fromParts("zulip", "msgid:${fcmMessage.zulipMessageId}", "")
-    val viewIntent = Intent(Intent.ACTION_VIEW, uri, context, NotificationIntentService::class.java)
+    val viewIntent = Intent(Intent.ACTION_VIEW, uri, context, NotificationIntentReceiver::class.java)
     viewIntent.putExtra(EXTRA_NOTIFICATION_DATA, fcmMessage.dataForOpen())
-    val viewPendingIntent = PendingIntent.getService(context, 0, viewIntent, 0)
+    val viewPendingIntent = PendingIntent.getBroadcast(context, 0, viewIntent, 0)
     builder.setContentIntent(viewPendingIntent)
 
     builder.setAutoCancel(true)
