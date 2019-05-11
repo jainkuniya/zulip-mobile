@@ -26,8 +26,6 @@ public class NotificationIntentService extends IntentService {
         if (ACTION_VIEW.equals(intent.getAction())) {
             final Bundle data = intent.getBundleExtra(EXTRA_NOTIFICATION_DATA);
             FCMPushNotifications.onOpened((ReactApplication) getApplication(), conversations, data);
-        } else if (ACTION_CLEAR.equals(intent.getAction())) {
-            FCMPushNotifications.onClear(this, conversations);
         }
     }
 }

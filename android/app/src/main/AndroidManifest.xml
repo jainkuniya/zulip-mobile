@@ -53,6 +53,8 @@
       <activity android:name=".debug.MainActivity" android:exported="true"/>
 
       <service android:name=".notifications.NotificationIntentService" />
+      <receiver android:name=".notifications.NotificationIntentReceiver" />
+
 
       <service
           android:name=".notifications.FcmListenerService"

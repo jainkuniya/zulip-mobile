@@ -158,9 +158,9 @@ private fun getNotificationBuilder(
     builder.setDefaults(Notification.DEFAULT_VIBRATE or Notification.DEFAULT_LIGHTS)
 
     if (Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT) {
-        val dismissIntent = Intent(context, NotificationIntentService::class.java)
+        val dismissIntent = Intent(context, NotificationIntentReceiver::class.java)
         dismissIntent.action = ACTION_CLEAR
-        val piDismiss = PendingIntent.getService(context, 0, dismissIntent, 0)
+        val piDismiss = PendingIntent.getBroadcast(context, 0, dismissIntent, 0)
         val action = Notification.Action(android.R.drawable.ic_menu_close_clear_cancel, "Clear", piDismiss)
         builder.addAction(action)
     }
