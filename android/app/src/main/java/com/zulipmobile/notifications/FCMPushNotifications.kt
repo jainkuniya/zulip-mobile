@@ -22,7 +22,6 @@ import com.zulipmobile.BuildConfig
 import com.zulipmobile.R
 
 private val CHANNEL_ID = "default"
-private val NOTIFICATION_ID = 435
 
 @JvmField
 val ACTION_CLEAR = "ACTION_CLEAR"
@@ -81,7 +80,11 @@ private fun updateNotification(
         return
     }
     val notification = getNotificationBuilder(context, conversations, fcmMessage).build()
-    getNotificationManager(context).notify(NOTIFICATION_ID, notification)
+    getNotificationManager(context).notify(
+        getNotificationTag(fcmMessage.identity),
+        getNotificationId(fcmMessage.identity),
+        notification
+    )
 }
 
 private fun getNotificationSoundUri(context: Context): Uri {
