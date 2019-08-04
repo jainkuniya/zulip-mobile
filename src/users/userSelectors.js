@@ -82,9 +82,9 @@ export const getSortedUsers: Selector<User[]> = createSelector(
  *
  * Throws if we have no data from the server.
  *
- * See also `getOwnEmail` and `getOwnUser`.
+ * See also `getOwnEmail`.
  */
-//   TODO  we can switch `getOwnUser` and other uses of `getOwnEmail` to use
+//   TODO  we can switch uses of `getOwnEmail` to use
 //   user IDs instead!
 export const getOwnUserId = (state: GlobalState): number => {
   const { user_id } = state.realm;
@@ -99,7 +99,7 @@ export const getOwnUserId = (state: GlobalState): number => {
  *
  * Throws if we have no data from the server.
  *
- * See also `getOwnUserId` and `getOwnUser`.
+ * See also `getOwnUserId`.
  */
 export const getOwnEmail = (state: GlobalState): string => {
   const { email } = state.realm;
@@ -107,26 +107,6 @@ export const getOwnEmail = (state: GlobalState): string => {
     throw new Error('No server data found');
   }
   return email;
-};
-
-/**
- * The person using the app, as represented by a `User` object.
- *
- * This is the server's information about the active, logged-in account, in
- * the same form as the information we get from the server about everyone
- * else in the organization.
- *
- * Throws if we have no such information.
- *
- * See also `getOwnUserId` and `getOwnEmail`.
- */
-export const getOwnUser = (state: GlobalState): User => {
-  const ownEmail = getOwnEmail(state);
-  const ownUser = getUsersByEmail(state).get(ownEmail);
-  if (ownUser === undefined) {
-    throw new Error('Have ownEmail, but not found in user data');
-  }
-  return ownUser;
 };
 
 /**
