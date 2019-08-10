@@ -5,6 +5,15 @@ import messagesFlags from './messages/messagesFlags';
 let unsentMessageIds = [];
 let lastSentTime = 0;
 
+/**
+ * Exported so that it can be used in test
+ * See queueMarkAsRead-test.js
+ */
+export const resetAll = () => {
+  unsentMessageIds = [];
+  lastSentTime = 0;
+};
+
 const processQueue = (auth: Auth) => {
   if (Date.now() - lastSentTime > 2000) {
     messagesFlags(auth, unsentMessageIds, 'add', 'read');
