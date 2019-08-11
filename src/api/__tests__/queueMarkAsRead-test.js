@@ -28,4 +28,13 @@ describe('queueMarkAsRead', () => {
 
     expect(messagesFlags.default).toHaveBeenCalledTimes(2);
   });
+
+  test('should call messagesFlags after 2s to clear queue', async () => {
+    queueMarkAsRead(eg.selfAuth, [1, 2, 3]);
+    queueMarkAsRead(eg.selfAuth, [4, 5, 6]);
+
+    await sleep(3000);
+
+    expect(messagesFlags.default).toHaveBeenCalledTimes(2);
+  });
 });
