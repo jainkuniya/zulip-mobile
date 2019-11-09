@@ -4,6 +4,7 @@ import { Platform, StyleSheet, View } from 'react-native';
 import type { DocumentPickerResponse } from 'react-native-document-picker';
 // $FlowFixMe
 import ImagePicker from 'react-native-image-picker';
+import type { ViewStyleProp } from 'react-native/Libraries/StyleSheet/StyleSheet';
 
 import type { Dispatch, Narrow } from '../types';
 import { connect } from '../react-redux';
@@ -17,6 +18,7 @@ type Props = $ReadOnly<{|
   dispatch: Dispatch,
   expanded: boolean,
   destinationNarrow: Narrow,
+  style?: ViewStyleProp,
   onExpandContract: () => void,
 |}>;
 
@@ -141,10 +143,10 @@ class ComposeMenu extends PureComponent<Props> {
   });
 
   render() {
-    const { dispatch, expanded, onExpandContract } = this.props;
+    const { dispatch, expanded, onExpandContract, style } = this.props;
     const numIcons = Platform.OS === 'android' ? 4 : 3;
     return (
-      <View style={this.styles.composeMenu}>
+      <View style={[style, this.styles.composeMenu]}>
         <AnimatedComponent
           stylePropertyName="width"
           fullValue={40 * numIcons}

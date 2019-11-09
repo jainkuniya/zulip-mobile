@@ -1,6 +1,6 @@
 /* @flow strict-local */
 import React, { PureComponent } from 'react';
-import { Platform, View, TextInput, findNodeHandle, ScrollView } from 'react-native';
+import { Platform, View, TextInput, findNodeHandle } from 'react-native';
 import type { LayoutEvent } from 'react-native/Libraries/Types/CoreEventTypes';
 import TextInputReset from 'react-native-text-input-reset';
 
@@ -32,6 +32,7 @@ import ComposeMenu from './ComposeMenu';
 import getComposeInputPlaceholder from './getComposeInputPlaceholder';
 import NotSubscribed from '../message/NotSubscribed';
 import AnnouncementOnly from '../message/AnnouncementOnly';
+import styles from '../styles';
 
 import {
   getAuth,
@@ -289,13 +290,18 @@ class ComposeBox extends PureComponent<Props, State> {
     },
     composeBox: {
       flexDirection: 'row',
-      alignItems: 'flex-end',
+      justifyContent: 'space-between',
+    },
+    composeMenu: {
+      alignSelf: 'flex-end',
     },
     composeText: {
+      alignSelf: 'center',
       paddingVertical: 8,
     },
     composeSendButton: {
       padding: 8,
+      alignSelf: 'flex-end',
     },
     topicInput: {
       borderWidth: 0,
@@ -356,11 +362,12 @@ class ComposeBox extends PureComponent<Props, State> {
         </View>
         <View style={[this.styles.composeBox, style]} onLayout={this.handleLayoutChange}>
           <ComposeMenu
+            style={this.styles.composeMenu}
             destinationNarrow={this.getDestinationNarrow()}
             expanded={isMenuExpanded}
             onExpandContract={this.handleComposeMenuToggle}
           />
-          <ScrollView contentContainerStyle={this.styles.composeText}>
+          <View style={[styles.flexed, this.styles.composeText]}>
             {this.getCanSelectTopic() && (
               <Input
                 style={this.styles.topicInput}
@@ -392,7 +399,7 @@ class ComposeBox extends PureComponent<Props, State> {
               onSelectionChange={this.handleMessageSelectionChange}
               onTouchStart={this.handleInputTouchStart}
             />
-          </ScrollView>
+          </View>
           <FloatingActionButton
             style={this.styles.composeSendButton}
             Icon={editMessage === null ? IconSend : IconDone}
