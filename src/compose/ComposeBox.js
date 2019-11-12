@@ -292,6 +292,11 @@ class ComposeBox extends PureComponent<Props, State> {
       alignItems: 'flex-end',
     },
     composeText: {
+      ...Platform.select({
+        ios: {
+          flex: 1,
+        },
+      }),
       paddingVertical: 8,
     },
     composeSendButton: {
@@ -338,6 +343,8 @@ class ComposeBox extends PureComponent<Props, State> {
       backgroundColor: 'hsla(0, 0%, 50%, 0.1)',
     };
 
+    const ComposeTextWrapper = Platform.OS === 'android' ? ScrollView : View;
+
     return (
       <View>
         <View style={[this.styles.autocompleteWrapper, { marginBottom: height }]}>
@@ -360,7 +367,7 @@ class ComposeBox extends PureComponent<Props, State> {
             expanded={isMenuExpanded}
             onExpandContract={this.handleComposeMenuToggle}
           />
-          <ScrollView contentContainerStyle={this.styles.composeText}>
+          <ComposeTextWrapper style={this.styles.composeText}>
             {this.getCanSelectTopic() && (
               <Input
                 style={this.styles.topicInput}
@@ -392,7 +399,7 @@ class ComposeBox extends PureComponent<Props, State> {
               onSelectionChange={this.handleMessageSelectionChange}
               onTouchStart={this.handleInputTouchStart}
             />
-          </ScrollView>
+          </ComposeTextWrapper>
           <FloatingActionButton
             style={this.styles.composeSendButton}
             Icon={editMessage === null ? IconSend : IconDone}
