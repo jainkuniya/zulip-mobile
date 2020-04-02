@@ -1,6 +1,6 @@
 /* @flow strict-local */
 import React, { PureComponent } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View } from 'react-native';
 import type { NavigationScreenProp } from 'react-navigation';
 import { ActionSheetProvider } from '@expo/react-native-action-sheet';
 
@@ -32,14 +32,6 @@ type Props = $ReadOnly<{|
   ...SelectorProps,
 |}>;
 
-const componentStyles = StyleSheet.create({
-  /** A workaround for #3089, by letting us put MessageList first. */
-  reverse: {
-    flex: 1,
-    flexDirection: 'column-reverse',
-  },
-});
-
 class ChatScreen extends PureComponent<Props> {
   context: Context;
 
@@ -59,19 +51,19 @@ class ChatScreen extends PureComponent<Props> {
 
     return (
       <ActionSheetProvider>
-        <View style={[contextStyles.screen, componentStyles.reverse]}>
-          <KeyboardAvoider style={componentStyles.reverse} behavior="padding">
-            {showComposeBox && <ComposeBox narrow={narrow} />}
+        <View style={contextStyles.screen}>
+          <KeyboardAvoider style={styles.flexed} behavior="padding">
+            <ZulipStatusBar narrow={narrow} />
+            <ChatNavBar narrow={narrow} />
+            <OfflineNotice />
+            <UnreadNotice narrow={narrow} />
             {sayNoMessages ? (
               <NoMessages narrow={narrow} />
             ) : (
               <MessageList narrow={narrow} showMessagePlaceholders={showMessagePlaceholders} />
             )}
-            <UnreadNotice narrow={narrow} />
+            {showComposeBox && <ComposeBox narrow={narrow} />}
           </KeyboardAvoider>
-          <OfflineNotice />
-          <ChatNavBar narrow={narrow} />
-          <ZulipStatusBar narrow={narrow} />
         </View>
       </ActionSheetProvider>
     );
